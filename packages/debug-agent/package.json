@@ -1,15 +1,15 @@
 {
   "name": "debug-agent",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Debugging skills for AI agents",
   "keywords": [
     "agent",
     "debug",
     "logging"
   ],
-  "homepage": "https://github.com/aidenybai/debug-mode-skill",
+  "homepage": "https://github.com/millionco/debug-mode-skill",
   "bugs": {
-    "url": "https://github.com/aidenybai/debug-mode-skill/issues"
+    "url": "https://github.com/millionco/debug-mode-skill/issues"
   },
   "license": "MIT",
   "author": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aidenybai/debug-mode-skill.git"
+    "url": "git+https://github.com/millionco/debug-mode-skill.git"
   },
   "bin": {
     "debug-agent": "./dist/cli.mjs"

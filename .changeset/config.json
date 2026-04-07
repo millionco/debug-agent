@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "aidenybai/debug-mode-skill" }],
+  "changelog": ["@changesets/changelog-github", { "repo": "millionco/debug-agent" }],
   "commit": false,
   "fixed": [],
   "linked": [],
