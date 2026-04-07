@@ -72,4 +72,45 @@ describe("init", () => {
     expect(result.linkedAgents).toContain("cursor");
     expect(result.errors).toContain("Unknown agent: fake-agent");
   });
+
+  it("re-running init overwrites existing skill file", () => {
+    const firstResult = init({ cwd: tempDirectory, agent: ["cursor"] });
+    const skillPath = path.join(firstResult.canonicalPath, "SKILL.md");
+    const firstContent = fs.readFileSync(skillPath, "utf-8");
+
+    const secondResult = init({ cwd: tempDirectory, agent: ["cursor"] });
+    const secondContent = fs.readFileSync(
+      path.join(secondResult.canonicalPath, "SKILL.md"),
+      "utf-8",
+    );
+
+    expect(firstContent).toBe(secondContent);
+    expect(firstResult.canonicalPath).toBe(secondResult.canonicalPath);
+  });
+
+  it("symlink for non-universal agent points to canonical directory", () => {
+    const result = init({ cwd: tempDirectory, agent: ["windsurf"] });
+
+    const windsurfSkillDirectory = path.join(tempDirectory, ".windsurf/skills/debug-agent");
+    const symlinkTarget = fs.readlinkSync(windsurfSkillDirectory);
+    const resolvedTarget = path.resolve(path.dirname(windsurfSkillDirectory), symlinkTarget);
+
+    expect(resolvedTarget).toBe(result.canonicalPath);
+  });
+
+  it("creates skill content with non-zero length", () => {
+    const result = init({ cwd: tempDirectory, agent: [] });
+    const skillPath = path.join(result.canonicalPath, "SKILL.md");
+    const skillContent = fs.readFileSync(skillPath, "utf-8");
+
+    expect(skillContent).toContain("debug");
+    expect(skillContent.length).toBeGreaterThan(100);
+  });
+
+  it("returns empty linkedAgents when no agents specified", () => {
+    const result = init({ cwd: tempDirectory, agent: [] });
+
+    expect(result.linkedAgents).toHaveLength(0);
+    expect(result.errors).toHaveLength(0);
+  });
 });

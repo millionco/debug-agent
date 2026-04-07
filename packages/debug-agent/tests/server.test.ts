@@ -279,6 +279,63 @@ describe("createServer", () => {
     expect(JSON.parse(logLines[0]).message).toBe("hello");
   });
 
+  it("sets CORS headers on responses", async () => {
+    const { info } = await startServer();
+    const response = await sendRequest(info.port, "GET", "/");
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it("appends multiple entries to the same log file", async () => {
+    const { info } = await startServer();
+
+    for (let entryIndex = 0; entryIndex < 5; entryIndex++) {
+      await sendRequest(info.port, "POST", "/", JSON.stringify({ index: entryIndex }));
+    }
+
+    const logLines = fs.readFileSync(info.logPath, "utf-8").trim().split("\n");
+    expect(logLines).toHaveLength(5);
+    expect(JSON.parse(logLines[0]).index).toBe(0);
+    expect(JSON.parse(logLines[4]).index).toBe(4);
+  });
+
+  it("uses custom logPath when provided", async () => {
+    tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "server-test-"));
+    const customLogPath = path.join(tempDirectory, "custom.log");
+
+    const result = await createServer({
+      cwd: tempDirectory,
+      sessionId: "custom-path",
+      logPath: customLogPath,
+    });
+    serverInstance = result.server;
+
+    expect(result.info.logPath).toBe(customLogPath);
+
+    await sendRequest(result.info.port, "POST", "/", JSON.stringify({ message: "custom" }));
+    expect(fs.existsSync(customLogPath)).toBe(true);
+  });
+
+  it("handles empty POST body as invalid JSON", async () => {
+    const { info } = await startServer();
+    const response = await sendRequest(info.port, "POST", "/", "");
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("tracks different entry ids independently", async () => {
+    const { info } = await startServer();
+
+    await sendRequest(info.port, "POST", "/", JSON.stringify({ id: "first", message: "a" }));
+    await sendRequest(info.port, "POST", "/", JSON.stringify({ id: "second", message: "b" }));
+    await sendRequest(info.port, "POST", "/", JSON.stringify({ id: "first", message: "c" }));
+
+    const logLines = fs.readFileSync(info.logPath, "utf-8").trim().split("\n");
+    expect(logLines).toHaveLength(2);
+    expect(JSON.parse(logLines[0]).id).toBe("first");
+    expect(JSON.parse(logLines[1]).id).toBe("second");
+  });
+
   it("generates random sessionId when not provided", async () => {
     tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "server-test-"));
     const { server, info } = await createServer({ cwd: tempDirectory });

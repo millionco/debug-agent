@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vite-plus/test";
-import { agents, isUniversalAgent, CANONICAL_SKILLS_DIR } from "../src/agents.js";
+import {
+  agents,
+  isUniversalAgent,
+  detectInstalledAgents,
+  CANONICAL_SKILLS_DIR,
+} from "../src/agents.js";
 
 describe("agents", () => {
   it("defines all expected agents", () => {
@@ -55,5 +60,33 @@ describe("isUniversalAgent", () => {
 
   it("identifies windsurf as a non-universal agent", () => {
     expect(isUniversalAgent(agents.windsurf)).toBe(false);
+  });
+
+  it("identifies claude-code as a non-universal agent", () => {
+    expect(isUniversalAgent(agents["claude-code"])).toBe(false);
+  });
+
+  it("identifies codex as a universal agent", () => {
+    expect(isUniversalAgent(agents.codex)).toBe(true);
+  });
+});
+
+describe("detectInstalledAgents", () => {
+  it("returns an array of tuples", () => {
+    const installed = detectInstalledAgents();
+    expect(Array.isArray(installed)).toBe(true);
+
+    for (const [agentKey, agentDefinition] of installed) {
+      expect(typeof agentKey).toBe("string");
+      expect(agentDefinition.displayName).toBeTruthy();
+      expect(agentDefinition.detect()).toBe(true);
+    }
+  });
+
+  it("only returns agents whose detect returns true", () => {
+    const installed = detectInstalledAgents();
+    for (const [_agentKey, agentDefinition] of installed) {
+      expect(agentDefinition.detect()).toBe(true);
+    }
   });
 });
