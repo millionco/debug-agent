@@ -1,5 +1,5 @@
 ---
-name: debug
+name: debug-agent
 description: >-
   Systematic evidence-based debugging using runtime logs. Generates hypotheses,
   instruments code with NDJSON logs, guides reproduction, analyzes log evidence,

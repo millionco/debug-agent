@@ -1,7 +1,7 @@
 import { Command } from "commander";
+import prompts from "prompts";
 import { init } from "../init.js";
-import { agents } from "../agents.js";
-import { AGENT_NAME_PAD_WIDTH } from "../constants.js";
+import { agents, detectInstalledAgents } from "../agents.js";
 
 export const initCommand = new Command("init")
   .description("Install the debug skill for detected agents")
@@ -9,20 +9,43 @@ export const initCommand = new Command("init")
   .option("-a, --agent <names...>", "target specific agents (e.g. cursor claude-code)")
   .option("--copy", "copy files instead of symlinking")
   .option("--list", "list available agents and exit")
-  .action((options) => {
+  .action(async (options) => {
     if (options.list) {
-      const agentList = Object.entries(agents).map(([agentKey, agentDefinition]) => {
+      for (const [agentKey, agentDefinition] of Object.entries(agents)) {
         const detectionIndicator = agentDefinition.detect() ? "✓" : " ";
-        return `  [${detectionIndicator}] ${agentKey.padEnd(AGENT_NAME_PAD_WIDTH)} ${agentDefinition.displayName}`;
-      });
-      console.log("Available agents:\n");
-      console.log(agentList.join("\n"));
+        console.log(`  [${detectionIndicator}] ${agentKey} — ${agentDefinition.displayName}`);
+      }
       return;
+    }
+
+    let selectedAgents: string[] | undefined = options.agent;
+
+    if (!selectedAgents) {
+      const installedAgents = detectInstalledAgents();
+
+      const response = await prompts({
+        type: "multiselect",
+        name: "agents",
+        message: "Select agents to install the debug skill for",
+        choices: Object.entries(agents).map(([agentKey, agentDefinition]) => ({
+          title: agentDefinition.displayName,
+          value: agentKey,
+          selected: installedAgents.some(([installedKey]) => installedKey === agentKey),
+        })),
+        hint: "Space to select, Enter to confirm",
+      });
+
+      if (!response.agents || response.agents.length === 0) {
+        console.log("No agents selected.");
+        return;
+      }
+
+      selectedAgents = response.agents;
     }
 
     const initResult = init({
       global: options.global,
-      agent: options.agent,
+      agent: selectedAgents,
       copy: options.copy,
     });
 

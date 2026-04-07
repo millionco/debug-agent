@@ -42,7 +42,7 @@ describe("init", () => {
 
     expect(result.linkedAgents).toContain("windsurf");
 
-    const windsurfSkillDirectory = path.join(tempDirectory, ".windsurf/skills/debug");
+    const windsurfSkillDirectory = path.join(tempDirectory, ".windsurf/skills/debug-agent");
     const isSymlink = fs.lstatSync(windsurfSkillDirectory).isSymbolicLink();
     expect(isSymlink).toBe(true);
   });
@@ -52,7 +52,7 @@ describe("init", () => {
 
     expect(result.linkedAgents).toContain("windsurf");
 
-    const windsurfSkillDirectory = path.join(tempDirectory, ".windsurf/skills/debug");
+    const windsurfSkillDirectory = path.join(tempDirectory, ".windsurf/skills/debug-agent");
     expect(fs.lstatSync(windsurfSkillDirectory).isSymbolicLink()).toBe(false);
     expect(fs.existsSync(path.join(windsurfSkillDirectory, "SKILL.md"))).toBe(true);
   });
