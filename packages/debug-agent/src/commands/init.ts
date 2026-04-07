@@ -4,7 +4,7 @@ import { agents } from "../agents.js";
 import { AGENT_NAME_PAD_WIDTH } from "../constants.js";
 
 export const initCommand = new Command("init")
-  .description("Install the debug-mode skill for detected agents")
+  .description("Install the debug skill for detected agents")
   .option("-g, --global", "install globally instead of in the current project")
   .option("-a, --agent <names...>", "target specific agents (e.g. cursor claude-code)")
   .option("--copy", "copy files instead of symlinking")
@@ -32,7 +32,7 @@ export const initCommand = new Command("init")
       }
     }
 
-    console.log(`Installed debug-mode skill to ${initResult.canonicalPath}`);
+    console.log(`Installed debug skill to ${initResult.canonicalPath}`);
 
     if (initResult.linkedAgents.length > 0) {
       console.log(`Linked for: ${initResult.linkedAgents.join(", ")}`);

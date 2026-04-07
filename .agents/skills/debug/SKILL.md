@@ -1,5 +1,5 @@
 ---
-name: debug-mode
+name: debug
 description: >-
   Systematic evidence-based debugging using runtime logs. Generates hypotheses,
   instruments code with NDJSON logs, guides reproduction, analyzes log evidence,

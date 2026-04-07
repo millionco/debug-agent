@@ -4,7 +4,7 @@ import path from "node:path";
 import { agents, isUniversalAgent, detectInstalledAgents, CANONICAL_SKILLS_DIR } from "./agents.js";
 import { createSymlinkSafe } from "./utils/create-symlink-safe.js";
 
-const SKILL_NAME = "debug-mode";
+const SKILL_NAME = "debug";
 
 const getSkillContent = (): string => {
   const skillPath = path.resolve(import.meta.dirname, "..", "skill", "SKILL.md");
