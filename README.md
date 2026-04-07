@@ -1,6 +1,6 @@
 # Debug Agent
 
-**Debug Agent** is a skill that teaches AI coding agents to debug with runtime evidence instead of guessing.
+Debug Agent teaches your agent to debug with runtime evidence, not guesswork.
 
 ## Getting Started
 
