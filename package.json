@@ -11,7 +11,9 @@
     "typecheck": "vp run debug-agent#typecheck",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "dev:website": "pnpm --filter @debug-agent/website dev",
+    "build:website": "pnpm --filter @debug-agent/website build"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.6.0",
