@@ -1,6 +1,6 @@
 {
   "name": "debug-agent",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Debugging skills for AI agents",
   "keywords": [
     "agent",
