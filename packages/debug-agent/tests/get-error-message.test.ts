@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vite-plus/test";
-import { getErrorMessage } from "../utils/get-error-message.js";
+import { getErrorMessage } from "../src/utils/get-error-message.js";
 
 describe("getErrorMessage", () => {
   it("extracts message from Error instances", () => {

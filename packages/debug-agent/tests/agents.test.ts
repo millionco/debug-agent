@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vite-plus/test";
-import { agents, isUniversalAgent, CANONICAL_SKILLS_DIR } from "../agents.js";
+import { agents, isUniversalAgent, CANONICAL_SKILLS_DIR } from "../src/agents.js";
 
 describe("agents", () => {
   it("defines all expected agents", () => {

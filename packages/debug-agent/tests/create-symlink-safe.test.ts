@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vite-plus/test";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import { createSymlinkSafe } from "../utils/create-symlink-safe.js";
+import { createSymlinkSafe } from "../src/utils/create-symlink-safe.js";
 
 describe("createSymlinkSafe", () => {
   let tempDirectory: string;
