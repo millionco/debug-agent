@@ -1,8 +1,9 @@
 import http from "node:http";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
-import { SESSION_ID_BYTE_LENGTH } from "./constants.js";
+import { SESSION_ID_BYTE_LENGTH, LOG_DIRECTORY_NAME } from "./constants.js";
 import { getErrorMessage } from "./utils/get-error-message.js";
 import { readServerLock, writeServerLock, removeServerLock } from "./utils/server-lock.js";
 import { pingServer } from "./utils/ping-server.js";
@@ -30,7 +31,7 @@ export interface ServerResult {
 
 export const createServer = async (options: ServerOptions = {}): Promise<ServerResult> => {
   const sessionId = options.sessionId || crypto.randomBytes(SESSION_ID_BYTE_LENGTH).toString("hex");
-  const logDirectory = path.resolve(options.cwd || process.cwd(), ".agents");
+  const logDirectory = path.join(options.cwd || os.tmpdir(), LOG_DIRECTORY_NAME);
   const logPath = options.logPath || path.join(logDirectory, `debug-${sessionId}.log`);
   const host = options.host || "127.0.0.1";
   const port = options.port || 0;

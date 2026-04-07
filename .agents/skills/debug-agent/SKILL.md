@@ -38,11 +38,15 @@ They guess based on code alone. You **cannot** and **must NOT** fix bugs this wa
 
 ### STEP 0: Start the logging server (MANDATORY BEFORE ANY INSTRUMENTATION)
 
-Run the debug server in the background before any instrumentation:
+**CRITICAL: The server is a long-running process. You MUST run it in the BACKGROUND.**
+
+Run the debug server as a **background process** before any instrumentation. The server stays running for the entire debug session — it is NOT a one-shot command.
 
 ```bash
-npx debug-agent
+npx debug-agent 2>&1 &
 ```
+
+**YOU MUST BACKGROUND THIS COMMAND.** Do NOT run it in the foreground. Do NOT wait for it to complete — it never completes, it is a persistent server. Use `&` (shell background), `nohup`, or your agent's background/async command execution. If your agent platform supports `block_until_ms: 0` or equivalent, use that. If it supports running commands in a separate terminal, do that. **The command MUST NOT block your workflow.**
 
 The server prints a single JSON line to stdout on startup:
 
@@ -51,7 +55,7 @@ The server prints a single JSON line to stdout on startup:
   "sessionId": "a1b2c3",
   "port": 54321,
   "endpoint": "http://127.0.0.1:54321/ingest/a1b2c3",
-  "logPath": "/abs/path/.agents/debug-a1b2c3.log"
+  "logPath": "/tmp/debug-agent/debug-a1b2c3.log"
 }
 ```
 
@@ -64,6 +68,7 @@ Capture and remember these values:
 If the server fails to start, STOP IMMEDIATELY and inform the user.
 
 - DO NOT PROCEED with instrumentation without valid logging configuration.
+- The server is idempotent — if one is already running, it returns the existing server's info instead of starting a duplicate.
 - You do not need to pre-create the log file; it will be created automatically when your instrumentation first writes to it.
 
 ### STEP 1: Understand the log format

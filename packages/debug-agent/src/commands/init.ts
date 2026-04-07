@@ -2,6 +2,9 @@ import { Command } from "commander";
 import prompts from "prompts";
 import { init } from "../init.js";
 import { agents, detectInstalledAgents } from "../agents.js";
+import { logger } from "../utils/logger.js";
+import { highlighter } from "../utils/highlighter.js";
+import { spinner } from "../utils/spinner.js";
 
 export const initCommand = new Command("init")
   .description("Install the debug skill for detected agents")
@@ -11,10 +14,16 @@ export const initCommand = new Command("init")
   .option("--list", "list available agents and exit")
   .action(async (options) => {
     if (options.list) {
+      logger.break();
       for (const [agentKey, agentDefinition] of Object.entries(agents)) {
-        const detectionIndicator = agentDefinition.detect() ? "✓" : " ";
-        console.log(`  [${detectionIndicator}] ${agentKey} — ${agentDefinition.displayName}`);
+        const detectionIndicator = agentDefinition.detect()
+          ? highlighter.success("✓")
+          : highlighter.dim("·");
+        logger.log(
+          `  ${detectionIndicator} ${highlighter.bold(agentDefinition.displayName)} ${highlighter.dim(agentKey)}`,
+        );
       }
+      logger.break();
       return;
     }
 
@@ -23,6 +32,7 @@ export const initCommand = new Command("init")
     if (!selectedAgents) {
       const installedAgents = detectInstalledAgents();
 
+      logger.break();
       const response = await prompts({
         type: "multiselect",
         name: "agents",
@@ -36,12 +46,14 @@ export const initCommand = new Command("init")
       });
 
       if (!response.agents || response.agents.length === 0) {
-        console.log("No agents selected.");
+        logger.warn("No agents selected.");
         return;
       }
 
       selectedAgents = response.agents;
     }
+
+    const installSpinner = spinner("Installing debug-agent skill...").start();
 
     const initResult = init({
       global: options.global,
@@ -51,13 +63,16 @@ export const initCommand = new Command("init")
 
     if (initResult.errors.length > 0) {
       for (const error of initResult.errors) {
-        console.error(`error: ${error}`);
+        logger.error(`  ${error}`);
       }
     }
 
-    console.log(`Installed debug skill to ${initResult.canonicalPath}`);
-
     if (initResult.linkedAgents.length > 0) {
-      console.log(`Linked for: ${initResult.linkedAgents.join(", ")}`);
+      installSpinner.succeed(`Installed to ${highlighter.dim(initResult.canonicalPath)}`);
+      logger.dim(`  Linked for: ${initResult.linkedAgents.join(", ")}`);
+    } else {
+      installSpinner.fail("No agents were installed.");
     }
+
+    logger.break();
   });

@@ -75,7 +75,7 @@ describe("createServer", () => {
   it("writes a lock file on start", async () => {
     await startServer();
 
-    const lockPath = path.join(tempDirectory, ".agents", "debug-server.lock");
+    const lockPath = path.join(tempDirectory, "debug-agent", "debug-server.lock");
     expect(fs.existsSync(lockPath)).toBe(true);
 
     const lockData = JSON.parse(fs.readFileSync(lockPath, "utf-8"));
@@ -86,7 +86,7 @@ describe("createServer", () => {
 
   it("removes lock file when server closes", async () => {
     const { server } = await startServer();
-    const lockPath = path.join(tempDirectory, ".agents", "debug-server.lock");
+    const lockPath = path.join(tempDirectory, "debug-agent", "debug-server.lock");
 
     expect(fs.existsSync(lockPath)).toBe(true);
     await closeServer(server!);
@@ -109,18 +109,18 @@ describe("createServer", () => {
 
   it("starts fresh when lock file exists but server is dead", async () => {
     tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "server-test-"));
-    const agentsDirectory = path.join(tempDirectory, ".agents");
-    fs.mkdirSync(agentsDirectory, { recursive: true });
+    const logDirectory = path.join(tempDirectory, "debug-agent");
+    fs.mkdirSync(logDirectory, { recursive: true });
 
     fs.writeFileSync(
-      path.join(agentsDirectory, "debug-server.lock"),
+      path.join(logDirectory, "debug-server.lock"),
       JSON.stringify({
         pid: 999999,
         host: "127.0.0.1",
         port: 19999,
         sessionId: "stale",
         endpoint: "http://127.0.0.1:19999/ingest/stale",
-        logPath: path.join(agentsDirectory, "debug-stale.log"),
+        logPath: path.join(logDirectory, "debug-stale.log"),
       }),
     );
 

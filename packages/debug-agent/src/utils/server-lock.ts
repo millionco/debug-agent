@@ -12,10 +12,10 @@ export interface ServerLockData {
 
 const LOCK_FILENAME = "debug-server.lock";
 
-const getLockPath = (agentsDirectory: string): string => path.join(agentsDirectory, LOCK_FILENAME);
+const getLockPath = (directory: string): string => path.join(directory, LOCK_FILENAME);
 
-export const readServerLock = (agentsDirectory: string): ServerLockData | null => {
-  const lockPath = getLockPath(agentsDirectory);
+export const readServerLock = (directory: string): ServerLockData | null => {
+  const lockPath = getLockPath(directory);
   if (!fs.existsSync(lockPath)) return null;
 
   try {
@@ -25,12 +25,12 @@ export const readServerLock = (agentsDirectory: string): ServerLockData | null =
   }
 };
 
-export const writeServerLock = (agentsDirectory: string, lockData: ServerLockData): void => {
-  fs.writeFileSync(getLockPath(agentsDirectory), JSON.stringify(lockData, null, 2));
+export const writeServerLock = (directory: string, lockData: ServerLockData): void => {
+  fs.writeFileSync(getLockPath(directory), JSON.stringify(lockData, null, 2));
 };
 
-export const removeServerLock = (agentsDirectory: string): void => {
-  const lockPath = getLockPath(agentsDirectory);
+export const removeServerLock = (directory: string): void => {
+  const lockPath = getLockPath(directory);
   if (fs.existsSync(lockPath)) {
     try {
       fs.unlinkSync(lockPath);
