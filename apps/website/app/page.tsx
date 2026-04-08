@@ -552,25 +552,25 @@ export default function HomePage() {
               "linear-gradient(to right, transparent 0%, rgba(255,255,255,0.5) 15%, rgba(255,255,255,0.5) 85%, transparent 100%)",
           }}
         />
-        <div className="w-112.75 relative flex items-center justify-center">
-          <div className="scale-[1.15]">
+        <div className="w-full max-w-112.75 relative flex items-center justify-center">
+          <div className="scale-[0.85] sm:scale-[1.15]">
             <TerminalIllustration />
           </div>
         </div>
         <div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-112.75"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-full max-w-112.75"
           style={{
             background:
               "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.06) 75%, transparent 100%)",
           }}
         />
       </div>
-      <div className="relative w-112.75 pb-20">
+      <div className="relative w-full max-w-112.75 px-5 sm:px-0 pb-20">
         <div className="flex flex-col gap-2.5 mt-13">
-          <div className="w-112.75 tracking-[-0.03em] [white-space-collapse:preserve] font-['OpenRunde-Semibold','Open_Runde',system-ui,sans-serif] font-semibold text-[23px]/9.5 text-[color(display-p3_0.248_0.248_0.248)]">
+          <div className="tracking-[-0.03em] [white-space-collapse:preserve] font-['OpenRunde-Semibold','Open_Runde',system-ui,sans-serif] font-semibold text-[23px]/9.5 text-[color(display-p3_0.248_0.248_0.248)]">
             Debug with runtime evidence
           </div>
-          <div className="[letter-spacing:0em] w-102 [white-space-collapse:preserve] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium text-[15px]/5.75 text-[#707070]">
+          <div className="[letter-spacing:0em] max-w-102 [white-space-collapse:preserve] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium text-[15px]/5.75 text-[#707070]">
             Debug Agent is a skill that teaches AI coding agents to debug with actual runtime log
             evidence. Works with Claude Code, Codex, Cursor, and more.
           </div>
@@ -578,7 +578,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-2.75 mt-6">
           <div
             onClick={handleSelectCommand}
-            className="[font-synthesis:none] items-center flex justify-between w-112.75 rounded-xl overflow-clip py-3.25 pr-3.5 pl-5 cursor-text bg-[color(display-p3_1_1_1)] [box-shadow:0px_0px_0px_1px_#0000000f,0px_1px_2px_-1px_#0000000f,0px_2px_4px_0px_#0000000a] antialiased"
+            className="[font-synthesis:none] items-center flex justify-between w-full rounded-xl overflow-clip py-3.25 pr-3.5 pl-5 cursor-text bg-[color(display-p3_1_1_1)] [box-shadow:0px_0px_0px_1px_#0000000f,0px_1px_2px_-1px_#0000000f,0px_2px_4px_0px_#0000000a] antialiased"
           >
             <div className="items-start flex min-w-0 gap-1">
               <div className="shrink-0 w-3.75 text-[#9A9A9A] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium text-[15.5px]/5.75">
@@ -645,8 +645,8 @@ export default function HomePage() {
             </button>
           </div>
         </div>
-        <div className="[font-synthesis:none] flex w-107.25 h-fit flex-col gap-4.25 antialiased mt-14">
-          <div className="mb-0 left-0 top-0 w-107.25 [white-space-collapse:preserve] relative text-[#3F3F3F] font-['OpenRunde-Semibold','Open_Runde',system-ui,sans-serif] font-semibold text-[17px]/5.75">
+        <div className="[font-synthesis:none] flex w-full max-w-107.25 h-fit flex-col gap-4.25 antialiased mt-14">
+          <div className="mb-0 left-0 top-0 [white-space-collapse:preserve] relative text-[#3F3F3F] font-['OpenRunde-Semibold','Open_Runde',system-ui,sans-serif] font-semibold text-[17px]/5.75">
             How it works
           </div>
           <div className="flex flex-col gap-2.75">
@@ -654,15 +654,15 @@ export default function HomePage() {
               <div className="[white-space-collapse:preserve] h-5.75 relative w-3.75 text-[#8E8E8E] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
                 1.
               </div>
-              <div className="[white-space-collapse:preserve] w-82.75 left-0 top-0 relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
+              <div className="[white-space-collapse:preserve] left-0 top-0 relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium text-[15px]/5.75">
                 Run /debug inside Claude Code, Codex, and more
               </div>
             </div>
-            <div className="flex items-start gap-2 w-107.25">
+            <div className="flex items-start gap-2">
               <div className="[white-space-collapse:preserve] h-5.75 relative w-3.75 text-[#8E8E8E] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
                 2.
               </div>
-              <div className="[white-space-collapse:preserve] w-82.75 relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
+              <div className="[white-space-collapse:preserve] relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium text-[15px]/5.75">
                 Generates hypotheses and instruments your code with lightweight NDJSON logs
               </div>
             </div>
@@ -670,7 +670,7 @@ export default function HomePage() {
               <div className="[white-space-collapse:preserve] h-5.75 relative w-3.75 text-[#8E8E8E] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
                 3.
               </div>
-              <div className="[white-space-collapse:preserve] w-82.75 relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
+              <div className="[white-space-collapse:preserve] relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium text-[15px]/5.75">
                 Asks you to reproduce the bug, then analyzes logs to confirm or reject hypotheses
               </div>
             </div>
@@ -678,7 +678,7 @@ export default function HomePage() {
               <div className="[white-space-collapse:preserve] h-5.75 relative w-3.75 text-[#8E8E8E] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
                 4.
               </div>
-              <div className="[white-space-collapse:preserve] w-82.75 relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium shrink-0 text-[15px]/5.75">
+              <div className="[white-space-collapse:preserve] relative text-[#474747] font-['OpenRunde-Medium','Open_Runde',system-ui,sans-serif] font-medium text-[15px]/5.75">
                 Fixes only with 100% confidence backed by log evidence, then verifies
               </div>
             </div>
@@ -724,7 +724,7 @@ export default function HomePage() {
             </div>
           </div>
         </a>
-        <div className="flex flex-col w-107.25 mt-14">
+        <div className="flex flex-col w-full max-w-107.25 mt-14">
           <div className="[letter-spacing:0em] font-['OpenRunde-Semibold','Open_Runde',system-ui,sans-serif] font-semibold text-[17px]/5.75 text-[color(display-p3_0.248_0.248_0.248)] mb-2.75">
             FAQ
           </div>
