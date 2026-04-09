@@ -42,17 +42,13 @@ They guess based on code alone. You **cannot** and **must NOT** fix bugs this wa
 
 ### STEP 0: Start the logging server (MANDATORY BEFORE ANY INSTRUMENTATION)
 
-**CRITICAL: The server is a long-running process. You MUST run it in the BACKGROUND.**
-
-Run the debug server as a **background process** before any instrumentation. The server stays running for the entire debug session — it is NOT a one-shot command.
+Run the debug server in **daemon mode** before any instrumentation. The `--daemon` flag starts the server in the background and exits immediately with the server info — no backgrounding or `&` required.
 
 ```bash
-npx debug-agent 2>&1 &
+npx debug-agent --daemon
 ```
 
-**YOU MUST BACKGROUND THIS COMMAND.** Do NOT run it in the foreground. Do NOT wait for it to complete — it never completes, it is a persistent server. Use `&` (shell background), `nohup`, or your agent's background/async command execution. If your agent platform supports `block_until_ms: 0` or equivalent, use that. If it supports running commands in a separate terminal, do that. **The command MUST NOT block your workflow.**
-
-The server prints a single JSON line to stdout on startup:
+The command prints a single JSON line to stdout and exits:
 
 ```json
 {
@@ -129,12 +125,10 @@ fetch('ENDPOINT',{method:'POST',headers:{'Content-Type':'application/json'},body
 
 ### STEP 3: Clear previous log file before each run (MANDATORY)
 
-- Use the delete_file tool to delete the file at the **log path** before asking the user to run.
-- If delete_file unavailable or fails: instruct user to manually delete the log file.
+- Send a `DELETE` request to the **server endpoint** to clear the log file before each run. For example: `curl -X DELETE ENDPOINT` (replace `ENDPOINT` with the endpoint value from Step 0).
 - This ensures clean logs for the new run without mixing old and new data.
-- Do NOT use shell commands (rm, touch, etc.); use the delete_file tool only.
 - Clearing the log file is NOT the same as removing instrumentation; do not remove any debug logs from code here.
-- **CRITICAL:** Only delete YOUR log file (the one at the log path from Step 0). NEVER delete, modify, or overwrite log files belonging to other debug sessions. Other sessions may have log files in the same directory with different session IDs in their filenames — leave them untouched.
+- **CRITICAL:** Only clear YOUR session's logs (via your endpoint from Step 0). NEVER delete, modify, or overwrite log files belonging to other debug sessions.
 
 ### STEP 4: Read logs after user runs the program
 
@@ -159,7 +153,7 @@ fetch('ENDPOINT',{method:'POST',headers:{'Content-Type':'application/json'},body
 - FORBIDDEN: Using `setTimeout`, `sleep`, or artificial delays as a "fix"; use proper reactivity/events/lifecycles.
 - FORBIDDEN: Removing instrumentation before analyzing post-fix verification logs or receiving explicit user confirmation.
 - Verification requires before/after log comparison with cited log lines; do not claim success without log proof.
-- Clear logs using the delete_file tool only (never shell commands like rm, touch, etc.).
+- Clear logs by sending a DELETE request to the server endpoint.
 - Do not create the log file manually; it's created automatically.
 - Clearing the log file is not removing instrumentation.
 - NEVER delete or modify log files that do not belong to this session. Only touch the log file at the exact path from Step 0.

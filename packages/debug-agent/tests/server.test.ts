@@ -61,6 +61,8 @@ describe("createServer", () => {
     return result;
   };
 
+  const ingestPath = "/ingest/test123";
+
   it("starts and returns server info with reused=false", async () => {
     const { info, reused, server } = await startServer();
 
@@ -137,7 +139,7 @@ describe("createServer", () => {
 
   it("handles CORS preflight", async () => {
     const { info } = await startServer();
-    const response = await sendRequest(info.port, "OPTIONS", "/");
+    const response = await sendRequest(info.port, "OPTIONS", ingestPath);
 
     expect(response.statusCode).toBe(204);
   });
@@ -148,7 +150,7 @@ describe("createServer", () => {
     const response = await sendRequest(
       info.port,
       "POST",
-      "/",
+      ingestPath,
       JSON.stringify({ level: "info", message: "hello" }),
     );
     const parsed = JSON.parse(response.body);
@@ -170,7 +172,7 @@ describe("createServer", () => {
     await sendRequest(
       info.port,
       "POST",
-      "/",
+      ingestPath,
       JSON.stringify({ sessionId: "custom", timestamp: 999, data: "test" }),
     );
 
@@ -182,7 +184,7 @@ describe("createServer", () => {
 
   it("returns 400 for invalid JSON", async () => {
     const { info } = await startServer();
-    const response = await sendRequest(info.port, "POST", "/", "not-json{{{");
+    const response = await sendRequest(info.port, "POST", ingestPath, "not-json{{{");
 
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body).error).toBe("Invalid JSON");
@@ -191,10 +193,10 @@ describe("createServer", () => {
   it("reads logs via GET", async () => {
     const { info } = await startServer();
 
-    await sendRequest(info.port, "POST", "/", JSON.stringify({ message: "first" }));
-    await sendRequest(info.port, "POST", "/", JSON.stringify({ message: "second" }));
+    await sendRequest(info.port, "POST", ingestPath, JSON.stringify({ message: "first" }));
+    await sendRequest(info.port, "POST", ingestPath, JSON.stringify({ message: "second" }));
 
-    const response = await sendRequest(info.port, "GET", "/");
+    const response = await sendRequest(info.port, "GET", ingestPath);
 
     expect(response.statusCode).toBe(200);
     const lines = response.body.trim().split("\n");
@@ -205,7 +207,7 @@ describe("createServer", () => {
 
   it("returns empty body for GET when no logs exist", async () => {
     const { info } = await startServer();
-    const response = await sendRequest(info.port, "GET", "/");
+    const response = await sendRequest(info.port, "GET", ingestPath);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBe("");
@@ -214,10 +216,10 @@ describe("createServer", () => {
   it("clears logs via DELETE", async () => {
     const { info } = await startServer();
 
-    await sendRequest(info.port, "POST", "/", JSON.stringify({ message: "to-delete" }));
+    await sendRequest(info.port, "POST", ingestPath, JSON.stringify({ message: "to-delete" }));
     expect(fs.existsSync(info.logPath)).toBe(true);
 
-    const response = await sendRequest(info.port, "DELETE", "/");
+    const response = await sendRequest(info.port, "DELETE", ingestPath);
     const parsed = JSON.parse(response.body);
 
     expect(response.statusCode).toBe(200);
@@ -228,7 +230,7 @@ describe("createServer", () => {
 
   it("DELETE succeeds even when no log file exists", async () => {
     const { info } = await startServer();
-    const response = await sendRequest(info.port, "DELETE", "/");
+    const response = await sendRequest(info.port, "DELETE", ingestPath);
 
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body).ok).toBe(true);
@@ -236,7 +238,7 @@ describe("createServer", () => {
 
   it("returns 405 for unsupported methods", async () => {
     const { info } = await startServer();
-    const response = await sendRequest(info.port, "PUT", "/");
+    const response = await sendRequest(info.port, "PUT", ingestPath);
 
     expect(response.statusCode).toBe(405);
   });
@@ -245,8 +247,8 @@ describe("createServer", () => {
     const { info } = await startServer();
 
     const entry = JSON.stringify({ id: "abc-123", message: "once" });
-    const firstResponse = await sendRequest(info.port, "POST", "/", entry);
-    const secondResponse = await sendRequest(info.port, "POST", "/", entry);
+    const firstResponse = await sendRequest(info.port, "POST", ingestPath, entry);
+    const secondResponse = await sendRequest(info.port, "POST", ingestPath, entry);
 
     expect(JSON.parse(firstResponse.body).duplicate).toBeUndefined();
     expect(JSON.parse(secondResponse.body).duplicate).toBe(true);
@@ -259,8 +261,8 @@ describe("createServer", () => {
     const { info } = await startServer();
 
     const entry = JSON.stringify({ message: "repeat-me" });
-    await sendRequest(info.port, "POST", "/", entry);
-    await sendRequest(info.port, "POST", "/", entry);
+    await sendRequest(info.port, "POST", ingestPath, entry);
+    await sendRequest(info.port, "POST", ingestPath, entry);
 
     const logLines = fs.readFileSync(info.logPath, "utf-8").trim().split("\n");
     expect(logLines).toHaveLength(2);
@@ -270,9 +272,9 @@ describe("createServer", () => {
     const { info } = await startServer();
 
     const entry = JSON.stringify({ id: "reset-test", message: "hello" });
-    await sendRequest(info.port, "POST", "/", entry);
-    await sendRequest(info.port, "DELETE", "/");
-    await sendRequest(info.port, "POST", "/", entry);
+    await sendRequest(info.port, "POST", ingestPath, entry);
+    await sendRequest(info.port, "DELETE", ingestPath);
+    await sendRequest(info.port, "POST", ingestPath, entry);
 
     const logLines = fs.readFileSync(info.logPath, "utf-8").trim().split("\n");
     expect(logLines).toHaveLength(1);
@@ -281,7 +283,7 @@ describe("createServer", () => {
 
   it("sets CORS headers on responses", async () => {
     const { info } = await startServer();
-    const response = await sendRequest(info.port, "GET", "/");
+    const response = await sendRequest(info.port, "GET", ingestPath);
 
     expect(response.statusCode).toBe(200);
   });
@@ -290,7 +292,7 @@ describe("createServer", () => {
     const { info } = await startServer();
 
     for (let entryIndex = 0; entryIndex < 5; entryIndex++) {
-      await sendRequest(info.port, "POST", "/", JSON.stringify({ index: entryIndex }));
+      await sendRequest(info.port, "POST", ingestPath, JSON.stringify({ index: entryIndex }));
     }
 
     const logLines = fs.readFileSync(info.logPath, "utf-8").trim().split("\n");
@@ -312,13 +314,18 @@ describe("createServer", () => {
 
     expect(result.info.logPath).toBe(customLogPath);
 
-    await sendRequest(result.info.port, "POST", "/", JSON.stringify({ message: "custom" }));
+    await sendRequest(
+      result.info.port,
+      "POST",
+      "/ingest/custom-path",
+      JSON.stringify({ message: "custom" }),
+    );
     expect(fs.existsSync(customLogPath)).toBe(true);
   });
 
   it("handles empty POST body as invalid JSON", async () => {
     const { info } = await startServer();
-    const response = await sendRequest(info.port, "POST", "/", "");
+    const response = await sendRequest(info.port, "POST", ingestPath, "");
 
     expect(response.statusCode).toBe(400);
   });
@@ -326,9 +333,14 @@ describe("createServer", () => {
   it("tracks different entry ids independently", async () => {
     const { info } = await startServer();
 
-    await sendRequest(info.port, "POST", "/", JSON.stringify({ id: "first", message: "a" }));
-    await sendRequest(info.port, "POST", "/", JSON.stringify({ id: "second", message: "b" }));
-    await sendRequest(info.port, "POST", "/", JSON.stringify({ id: "first", message: "c" }));
+    await sendRequest(info.port, "POST", ingestPath, JSON.stringify({ id: "first", message: "a" }));
+    await sendRequest(
+      info.port,
+      "POST",
+      ingestPath,
+      JSON.stringify({ id: "second", message: "b" }),
+    );
+    await sendRequest(info.port, "POST", ingestPath, JSON.stringify({ id: "first", message: "c" }));
 
     const logLines = fs.readFileSync(info.logPath, "utf-8").trim().split("\n");
     expect(logLines).toHaveLength(2);
@@ -342,5 +354,54 @@ describe("createServer", () => {
     serverInstance = server;
 
     expect(info.sessionId).toMatch(/^[0-9a-f]{6}$/);
+  });
+
+  it("returns 200 for health check at GET /", async () => {
+    const { info } = await startServer();
+    const response = await sendRequest(info.port, "GET", "/");
+
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body).ok).toBe(true);
+  });
+
+  it("returns 404 for unknown paths", async () => {
+    const { info } = await startServer();
+
+    const response = await sendRequest(info.port, "GET", "/unknown/path");
+    expect(response.statusCode).toBe(404);
+
+    const postResponse = await sendRequest(
+      info.port,
+      "POST",
+      "/wrong",
+      JSON.stringify({ message: "nope" }),
+    );
+    expect(postResponse.statusCode).toBe(404);
+  });
+
+  it("routes different session IDs to separate log files", async () => {
+    const { info } = await startServer();
+
+    await sendRequest(
+      info.port,
+      "POST",
+      "/ingest/session-a",
+      JSON.stringify({ message: "from-a" }),
+    );
+    await sendRequest(
+      info.port,
+      "POST",
+      "/ingest/session-b",
+      JSON.stringify({ message: "from-b" }),
+    );
+
+    const logDirectory = path.join(tempDirectory, "debug-agent");
+    const logA = fs.readFileSync(path.join(logDirectory, "debug-session-a.log"), "utf-8");
+    const logB = fs.readFileSync(path.join(logDirectory, "debug-session-b.log"), "utf-8");
+
+    expect(JSON.parse(logA.trim()).message).toBe("from-a");
+    expect(JSON.parse(logB.trim()).message).toBe("from-b");
+
+    expect(fs.existsSync(info.logPath)).toBe(false);
   });
 });
