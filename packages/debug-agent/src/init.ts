@@ -24,8 +24,25 @@ export interface InitResult {
   errors: string[];
 }
 
-const writeSkillToDirectory = (directory: string, content: string) => {
+const ensureRealDirectory = (directory: string) => {
+  const segments = directory.split(path.sep);
+  for (let index = 1; index <= segments.length; index++) {
+    const partial = segments.slice(0, index).join(path.sep) || path.sep;
+    try {
+      const stat = fs.lstatSync(partial);
+      if (stat.isSymbolicLink()) {
+        fs.unlinkSync(partial);
+        fs.mkdirSync(partial, { recursive: true });
+      }
+    } catch {
+      break;
+    }
+  }
   fs.mkdirSync(directory, { recursive: true });
+};
+
+const writeSkillToDirectory = (directory: string, content: string) => {
+  ensureRealDirectory(directory);
   fs.writeFileSync(path.join(directory, "SKILL.md"), content);
 };
 

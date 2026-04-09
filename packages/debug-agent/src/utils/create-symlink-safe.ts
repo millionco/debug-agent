@@ -3,22 +3,27 @@ import path from "node:path";
 
 export const createSymlinkSafe = (target: string, linkPath: string): boolean => {
   try {
-    const linkDirectory = path.dirname(linkPath);
-    fs.mkdirSync(linkDirectory, { recursive: true });
+    const resolvedTarget = fs.realpathSync(target);
+    const resolvedLinkParent = fs.realpathSync(path.dirname(linkPath));
+    const resolvedLinkPath = path.join(resolvedLinkParent, path.basename(linkPath));
+
+    if (resolvedLinkPath === resolvedTarget) return true;
+
+    fs.mkdirSync(resolvedLinkParent, { recursive: true });
 
     if (fs.existsSync(linkPath)) {
       const linkStat = fs.lstatSync(linkPath);
       if (linkStat.isSymbolicLink()) {
         const existingTarget = fs.readlinkSync(linkPath);
         const resolvedExisting = path.resolve(path.dirname(linkPath), existingTarget);
-        if (resolvedExisting === path.resolve(target)) return true;
+        if (resolvedExisting === resolvedTarget) return true;
         fs.unlinkSync(linkPath);
       } else {
         fs.rmSync(linkPath, { recursive: true });
       }
     }
 
-    const relativePath = path.relative(path.dirname(linkPath), target);
+    const relativePath = path.relative(resolvedLinkParent, resolvedTarget);
     fs.symlinkSync(relativePath, linkPath);
     return true;
   } catch {

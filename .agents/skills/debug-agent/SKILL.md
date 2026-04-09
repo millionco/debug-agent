@@ -18,11 +18,15 @@ They guess based on code alone. You **cannot** and **must NOT** fix bugs this wa
 
 1. **Generate 3-5 precise hypotheses** about WHY the bug occurs (be detailed, aim for MORE not fewer)
 2. **Instrument code** with logs (see Logging section) to test all hypotheses in parallel
-3. **Ask user to reproduce** the bug. Provide clear, numbered reproduction steps. Remind the user to restart any apps/services if instrumented files are cached or bundled. Ask the user to confirm when done.
+3. **Reproduce the bug.**
+   - **If a failing test already exists**: run it directly.
+   - **If reproduction is straightforward** (e.g., a single CLI command, a curl request, a simple script): write and run an ad hoc reproduction script yourself. Tailor it to the runtime — Playwright/Puppeteer for browser bugs, a Node/Python/shell script for backend bugs, etc.
+   - **Otherwise**: ask the user to reproduce it. Provide clear, numbered steps. Remind them to restart apps/services if instrumented files are cached or bundled. Offer: "If you'd like me to write a reproduction script instead, let me know."
+   - Once the user confirms a reproduction pathway (manual or automated), reuse it for all subsequent iterations without re-asking.
 4. **Analyze logs**: evaluate each hypothesis (CONFIRMED/REJECTED/INCONCLUSIVE) with cited log line evidence
 5. **Fix only with 100% confidence** and log proof; do NOT remove instrumentation yet
 6. **Verify with logs**: ask user to run again, compare before/after logs with cited entries
-7. **If logs prove success** and user confirms: remove logs and explain. **If failed**: FIRST remove any code changes from rejected hypotheses (keep only instrumentation and proven fixes), THEN generate NEW hypotheses from different subsystems and add more instrumentation
+7. **If logs prove success** and user confirms: remove all instrumentation by searching for `#region debug log` / `#endregion` markers and deleting those blocks (see Cleanup section). **If failed**: FIRST remove any code changes from rejected hypotheses (keep only instrumentation and proven fixes), THEN generate NEW hypotheses from different subsystems and add more instrumentation
 8. **After confirmed success**: explain the problem and provide a concise summary of the fix (1-2 lines)
 
 **Critical constraints:**
@@ -162,6 +166,19 @@ fetch('ENDPOINT',{method:'POST',headers:{'Content-Type':'application/json'},body
 - If all hypotheses are rejected, you MUST generate more and add more instrumentation accordingly.
 - **Remove code changes from rejected hypotheses:** When logs prove a hypothesis wrong, revert the code changes made for that hypothesis. Do not let defensive guards, speculative fixes, or unproven changes accumulate. Only keep modifications that are supported by runtime evidence.
 - Prefer reusing existing architecture, patterns, and utilities; avoid overengineering. Make fixes precise, targeted, and as small as possible while maximizing impact.
+
+## Cleanup
+
+When it is time to remove instrumentation (after verified fix or user request):
+
+1. Search all files for `#region debug log` markers (e.g., grep/ripgrep for `#region debug log`)
+2. For each match, delete everything from the `#region debug log` line through its corresponding `#endregion` line (inclusive)
+3. Grep again to verify zero markers remain
+4. Run `git diff` to review all changes — confirm only your intentional fix remains and no stray debug code was missed
+
+This is why wrapping every debug log in `#region debug log` / `#endregion` is mandatory — it enables deterministic cleanup.
+
+---
 
 ## Server API reference
 
