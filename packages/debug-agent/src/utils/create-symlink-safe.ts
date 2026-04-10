@@ -3,13 +3,14 @@ import path from "node:path";
 
 export const createSymlinkSafe = (target: string, linkPath: string): boolean => {
   try {
+    const linkParent = path.dirname(linkPath);
+    fs.mkdirSync(linkParent, { recursive: true });
+
     const resolvedTarget = fs.realpathSync(target);
-    const resolvedLinkParent = fs.realpathSync(path.dirname(linkPath));
+    const resolvedLinkParent = fs.realpathSync(linkParent);
     const resolvedLinkPath = path.join(resolvedLinkParent, path.basename(linkPath));
 
     if (resolvedLinkPath === resolvedTarget) return true;
-
-    fs.mkdirSync(resolvedLinkParent, { recursive: true });
 
     if (fs.existsSync(linkPath)) {
       const linkStat = fs.lstatSync(linkPath);
