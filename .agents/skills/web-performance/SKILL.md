@@ -67,7 +67,7 @@ Reports every frame `> 50ms` across the whole page, with `scripts[].sourceURL` +
 ### STEP 0: Start the logging server (background-only)
 
 ```bash
-npx debug-agent --json --daemon
+npx debug-agent@latest --json --daemon
 ```
 
 `--daemon` forks the server into a detached process and exits immediately (your shell unblocks instantly — no need for `&`/`nohup`). `--json` makes the parent emit one machine-readable JSON line (without it you get a colored spinner). It prints one JSON line on startup:
