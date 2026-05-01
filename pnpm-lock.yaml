@@ -125,8 +125,8 @@ importers:
   packages/debug-agent:
     dependencies:
       agent-install:
-        specifier: ^0.0.2
-        version: 0.0.2
+        specifier: ^0.0.5
+        version: 0.0.5
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -1838,8 +1838,8 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  agent-install@0.0.2:
-    resolution: {integrity: sha512-W56PM93te/OFuaDWECJ3HOmazaS+9byOA9pNio8dRC0aAGYlsm82lrcqo6L60bIt5AcSKzOXt0v//9n4neGlhw==}
+  agent-install@0.0.5:
+    resolution: {integrity: sha512-nHlms9BkP8ZiY79HrwCGiA2DcNaXrAaJrCM/BEqQ7MEsSKyCk+2A76xPGylIfASZSZE0SaU3T0bNSg4rBPIJAQ==}
     hasBin: true
 
   ajv-formats@3.0.1:
@@ -5010,7 +5010,7 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agent-install@0.0.2:
+  agent-install@0.0.5:
     dependencies:
       '@iarna/toml': 2.2.5
       commander: 14.0.3
