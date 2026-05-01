@@ -144,7 +144,7 @@ importers:
         specifier: ^2.4.9
         version: 2.4.9
 
-  packages/debug-browser:
+  packages/debug-agent-browser:
     dependencies:
       default-browser:
         specifier: ^5.5.0

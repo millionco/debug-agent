@@ -9,10 +9,10 @@ const formatMeta = (meta?: Record<string, unknown>): string =>
   meta && Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : "";
 
 export const consoleLogger: Logger = {
-  debug: (message, meta) => console.debug(`[debug-browser] ${message}${formatMeta(meta)}`),
-  info: (message, meta) => console.info(`[debug-browser] ${message}${formatMeta(meta)}`),
-  warn: (message, meta) => console.warn(`[debug-browser] ${message}${formatMeta(meta)}`),
-  error: (message, meta) => console.error(`[debug-browser] ${message}${formatMeta(meta)}`),
+  debug: (message, meta) => console.debug(`[debug-agent-browser] ${message}${formatMeta(meta)}`),
+  info: (message, meta) => console.info(`[debug-agent-browser] ${message}${formatMeta(meta)}`),
+  warn: (message, meta) => console.warn(`[debug-agent-browser] ${message}${formatMeta(meta)}`),
+  error: (message, meta) => console.error(`[debug-agent-browser] ${message}${formatMeta(meta)}`),
 };
 
 export const silentLogger: Logger = {

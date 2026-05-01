@@ -1,5 +1,5 @@
 {
-  "name": "debug-browser",
+  "name": "debug-agent-browser",
   "version": "0.0.1",
   "description": "Browser automation, CDP discovery, and cross-browser cookie extraction for debug agents",
   "keywords": [
