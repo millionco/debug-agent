@@ -1,15 +1,16 @@
-import fs from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
-import { agents, isUniversalAgent, detectInstalledAgents, CANONICAL_SKILLS_DIR } from "./agents.js";
-import { createSymlinkSafe } from "./utils/create-symlink-safe.js";
+import {
+  CANONICAL_SKILLS_DIR,
+  detectInstalledSkillAgents,
+  installSkillsFromSource,
+  isSkillAgentType,
+} from "agent-install";
+import type { InstallMode, SkillAgentType } from "agent-install";
 
 const SKILL_NAME = "debug-agent";
 
-const getSkillContent = (): string => {
-  const skillPath = path.resolve(import.meta.dirname, "..", "skill", "SKILL.md");
-  return fs.readFileSync(skillPath, "utf-8");
-};
+const getSkillSourceDirectory = (): string => path.resolve(import.meta.dirname, "..", "skill");
 
 export interface InitOptions {
   global?: boolean;
@@ -24,73 +25,79 @@ export interface InitResult {
   errors: string[];
 }
 
-const ensureRealDirectory = (directory: string) => {
-  const segments = directory.split(path.sep);
-  for (let index = 1; index <= segments.length; index++) {
-    const partial = segments.slice(0, index).join(path.sep) || path.sep;
-    try {
-      const stat = fs.lstatSync(partial);
-      if (stat.isSymbolicLink()) {
-        fs.unlinkSync(partial);
-        fs.mkdirSync(partial, { recursive: true });
-      }
-    } catch {
-      break;
+interface ResolvedAgents {
+  agents: SkillAgentType[];
+  userIncludedUniversal: boolean;
+}
+
+const resolveRequestedAgents = async (
+  requestedAgents: string[] | undefined,
+  errors: string[],
+): Promise<ResolvedAgents> => {
+  if (requestedAgents === undefined) {
+    return {
+      agents: await detectInstalledSkillAgents(),
+      userIncludedUniversal: false,
+    };
+  }
+
+  const validAgents: SkillAgentType[] = [];
+  let userIncludedUniversal = false;
+
+  for (const agentName of requestedAgents) {
+    if (isSkillAgentType(agentName)) {
+      if (agentName === "universal") userIncludedUniversal = true;
+      validAgents.push(agentName);
+    } else {
+      errors.push(`Unknown agent: ${agentName}`);
     }
   }
-  fs.mkdirSync(directory, { recursive: true });
+
+  return { agents: validAgents, userIncludedUniversal };
 };
 
-const writeSkillToDirectory = (directory: string, content: string) => {
-  ensureRealDirectory(directory);
-  fs.writeFileSync(path.join(directory, "SKILL.md"), content);
-};
-
-export const init = (options: InitOptions = {}): InitResult => {
-  const workingDirectory = options.cwd || process.cwd();
+export const init = async (options: InitOptions = {}): Promise<InitResult> => {
   const isGlobal = options.global ?? false;
-  const useSymlinks = !(options.copy ?? false);
+  const workingDirectory = options.cwd || process.cwd();
+  const installMode: InstallMode = options.copy ? "copy" : "symlink";
 
-  const baseDirectory = isGlobal ? homedir() : workingDirectory;
-  const canonicalDirectory = path.join(baseDirectory, CANONICAL_SKILLS_DIR, SKILL_NAME);
+  const canonicalPath = path.join(
+    isGlobal ? homedir() : workingDirectory,
+    CANONICAL_SKILLS_DIR,
+    SKILL_NAME,
+  );
 
-  const result: InitResult = {
-    canonicalPath: canonicalDirectory,
-    linkedAgents: [],
-    errors: [],
-  };
+  const errors: string[] = [];
+  const { agents: requestedAgents, userIncludedUniversal } = await resolveRequestedAgents(
+    options.agent,
+    errors,
+  );
 
-  const skillContent = getSkillContent();
+  const agentsToInstall: SkillAgentType[] = requestedAgents.includes("universal")
+    ? requestedAgents
+    : [...requestedAgents, "universal"];
 
-  writeSkillToDirectory(canonicalDirectory, skillContent);
+  const installResult = await installSkillsFromSource({
+    source: getSkillSourceDirectory(),
+    agents: agentsToInstall,
+    cwd: workingDirectory,
+    global: isGlobal,
+    mode: installMode,
+  });
 
-  const agentsToInstall = options.agent
-    ? options.agent
-        .map((agentName) => [agentName, agents[agentName]] as const)
-        .filter(([agentName, agentDefinition]) => {
-          if (!agentDefinition) {
-            result.errors.push(`Unknown agent: ${agentName}`);
-            return false;
-          }
-          return true;
-        })
-    : detectInstalledAgents();
-
-  for (const [agentName, agentDefinition] of agentsToInstall) {
-    if (!isUniversalAgent(agentDefinition)) {
-      const agentSkillsDirectory = isGlobal
-        ? agentDefinition.globalSkillsDir
-        : path.join(workingDirectory, agentDefinition.skillsDir);
-      const agentSkillDirectory = path.join(agentSkillsDirectory, SKILL_NAME);
-
-      const didLink = useSymlinks && createSymlinkSafe(canonicalDirectory, agentSkillDirectory);
-      if (!didLink) {
-        writeSkillToDirectory(agentSkillDirectory, skillContent);
-      }
-    }
-
-    result.linkedAgents.push(agentName);
+  for (const failure of installResult.failed) {
+    errors.push(`${failure.agent}: ${failure.error}`);
   }
 
-  return result;
+  const linkedAgentSet = new Set<string>();
+  for (const installed of installResult.installed) {
+    if (!userIncludedUniversal && installed.agent === "universal") continue;
+    linkedAgentSet.add(installed.agent);
+  }
+
+  return {
+    canonicalPath,
+    linkedAgents: [...linkedAgentSet],
+    errors,
+  };
 };

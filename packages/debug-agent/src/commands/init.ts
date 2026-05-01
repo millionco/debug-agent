@@ -15,10 +15,15 @@ export const initCommand = new Command("init")
   .action(async (options) => {
     if (options.list) {
       logger.break();
-      for (const [agentKey, agentDefinition] of Object.entries(agents)) {
-        const detectionIndicator = agentDefinition.detect()
-          ? highlighter.success("✓")
-          : highlighter.dim("·");
+      const detectionStatuses = await Promise.all(
+        Object.entries(agents).map(async ([agentKey, agentDefinition]) => ({
+          agentKey,
+          agentDefinition,
+          isInstalled: await agentDefinition.detectInstalled(),
+        })),
+      );
+      for (const { agentKey, agentDefinition, isInstalled } of detectionStatuses) {
+        const detectionIndicator = isInstalled ? highlighter.success("✓") : highlighter.dim("·");
         logger.log(
           `  ${detectionIndicator} ${highlighter.bold(agentDefinition.displayName)} ${highlighter.dim(agentKey)}`,
         );
@@ -30,7 +35,7 @@ export const initCommand = new Command("init")
     let selectedAgents: string[] | undefined = options.agent;
 
     if (!selectedAgents) {
-      const installedAgents = detectInstalledAgents();
+      const installedAgentSet = new Set<string>(await detectInstalledAgents());
 
       logger.break();
       const response = await prompts({
@@ -40,7 +45,7 @@ export const initCommand = new Command("init")
         choices: Object.entries(agents).map(([agentKey, agentDefinition]) => ({
           title: agentDefinition.displayName,
           value: agentKey,
-          selected: installedAgents.some(([installedKey]) => installedKey === agentKey),
+          selected: installedAgentSet.has(agentKey),
         })),
         hint: "Space to select, Enter to confirm",
       });
@@ -55,7 +60,7 @@ export const initCommand = new Command("init")
 
     const installSpinner = spinner("Installing debug-agent skill...").start();
 
-    const initResult = init({
+    const initResult = await init({
       global: options.global,
       agent: selectedAgents,
       copy: options.copy,

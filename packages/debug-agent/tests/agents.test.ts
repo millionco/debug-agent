@@ -7,86 +7,77 @@ import {
 } from "../src/agents.js";
 
 describe("agents", () => {
-  it("defines all expected agents", () => {
+  it("re-exports agent-install's agent registry with the expected agents", () => {
     const expectedAgents = [
-      "cursor",
       "claude-code",
       "codex",
-      "github-copilot",
+      "cursor",
       "gemini-cli",
-      "windsurf",
-      "amp",
+      "github-copilot",
+      "goose",
       "opencode",
+      "windsurf",
+      "roo",
+      "cline",
+      "kilo",
+      "universal",
     ];
-    expect(Object.keys(agents)).toEqual(expectedAgents);
+    for (const expectedAgent of expectedAgents) {
+      expect(agents[expectedAgent], `missing agent: ${expectedAgent}`).toBeTruthy();
+    }
   });
 
-  it("every agent has required fields", () => {
+  it("every agent has the required SkillAgentConfig fields", () => {
     for (const [agentKey, agentDefinition] of Object.entries(agents)) {
+      expect(agentDefinition.name, `${agentKey} missing name`).toBe(agentKey);
       expect(agentDefinition.displayName, `${agentKey} missing displayName`).toBeTruthy();
       expect(agentDefinition.skillsDir, `${agentKey} missing skillsDir`).toBeTruthy();
-      expect(agentDefinition.globalSkillsDir, `${agentKey} missing globalSkillsDir`).toBeTruthy();
-      expect(typeof agentDefinition.detect, `${agentKey} detect is not a function`).toBe(
-        "function",
-      );
+      expect(
+        typeof agentDefinition.detectInstalled,
+        `${agentKey} detectInstalled is not a function`,
+      ).toBe("function");
     }
   });
 });
 
 describe("isUniversalAgent", () => {
-  it("returns true for agents using the canonical skills dir", () => {
-    const universalAgent = {
-      displayName: "Test",
-      skillsDir: CANONICAL_SKILLS_DIR,
-      globalSkillsDir: "/tmp/skills",
-      detect: () => false,
-    };
-    expect(isUniversalAgent(universalAgent)).toBe(true);
-  });
-
-  it("returns false for agents with custom skills dirs", () => {
-    const customAgent = {
-      displayName: "Test",
-      skillsDir: ".custom/skills",
-      globalSkillsDir: "/tmp/skills",
-      detect: () => false,
-    };
-    expect(isUniversalAgent(customAgent)).toBe(false);
-  });
-
   it("identifies cursor as a universal agent", () => {
-    expect(isUniversalAgent(agents.cursor)).toBe(true);
+    expect(isUniversalAgent("cursor")).toBe(true);
   });
 
   it("identifies windsurf as a non-universal agent", () => {
-    expect(isUniversalAgent(agents.windsurf)).toBe(false);
+    expect(isUniversalAgent("windsurf")).toBe(false);
   });
 
   it("identifies claude-code as a non-universal agent", () => {
-    expect(isUniversalAgent(agents["claude-code"])).toBe(false);
+    expect(isUniversalAgent("claude-code")).toBe(false);
   });
 
   it("identifies codex as a universal agent", () => {
-    expect(isUniversalAgent(agents.codex)).toBe(true);
+    expect(isUniversalAgent("codex")).toBe(true);
+  });
+
+  it("CANONICAL_SKILLS_DIR is .agents/skills", () => {
+    expect(CANONICAL_SKILLS_DIR).toBe(".agents/skills");
   });
 });
 
 describe("detectInstalledAgents", () => {
-  it("returns an array of tuples", () => {
-    const installed = detectInstalledAgents();
+  it("returns an array of agent keys", async () => {
+    const installed = await detectInstalledAgents();
     expect(Array.isArray(installed)).toBe(true);
 
-    for (const [agentKey, agentDefinition] of installed) {
+    for (const agentKey of installed) {
       expect(typeof agentKey).toBe("string");
-      expect(agentDefinition.displayName).toBeTruthy();
-      expect(agentDefinition.detect()).toBe(true);
+      expect(agents[agentKey]).toBeTruthy();
     }
   });
 
-  it("only returns agents whose detect returns true", () => {
-    const installed = detectInstalledAgents();
-    for (const [_agentKey, agentDefinition] of installed) {
-      expect(agentDefinition.detect()).toBe(true);
+  it("only returns agents whose detectInstalled returns true", async () => {
+    const installed = await detectInstalledAgents();
+    for (const agentKey of installed) {
+      const isStillInstalled = await agents[agentKey].detectInstalled();
+      expect(isStillInstalled).toBe(true);
     }
   });
 });
