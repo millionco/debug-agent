@@ -1,0 +1,72 @@
+{
+  "name": "debug-browser",
+  "version": "0.0.1",
+  "description": "Browser automation, CDP discovery, and cross-browser cookie extraction for debug agents",
+  "keywords": [
+    "browser",
+    "cdp",
+    "playwright",
+    "chrome",
+    "cookies",
+    "debug"
+  ],
+  "homepage": "https://github.com/millionco/debug-agent",
+  "bugs": {
+    "url": "https://github.com/millionco/debug-agent/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Aiden Bai",
+    "email": "aiden@million.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/millionco/debug-agent.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./cookies": {
+      "types": "./dist/cookies.d.mts",
+      "import": "./dist/cookies.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test run",
+    "test:watch": "vp test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "default-browser": "^5.5.0",
+    "get-port": "^7.1.0",
+    "ini": "^6.0.0",
+    "libsql": "^0.5.22",
+    "playwright": "^1.52.0",
+    "which": "^6.0.1",
+    "ws": "^8.18.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/ini": "^4.1.1",
+    "@types/node": "^25.5.2",
+    "@types/which": "^3.0.4",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
