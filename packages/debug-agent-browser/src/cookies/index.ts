@@ -51,7 +51,12 @@ export {
   type ExtractionReason,
 } from "./errors";
 
-export { BROWSER_CONFIGS, configByKey, configByBundleId, configByDesktopFile } from "./browser-config";
+export {
+  BROWSER_CONFIGS,
+  configByKey,
+  configByBundleId,
+  configByDesktopFile,
+} from "./browser-config";
 export type { BrowserConfig, ChromiumConfig, FirefoxConfig, SafariConfig } from "./browser-config";
 
 export {

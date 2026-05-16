@@ -1,10 +1,6 @@
 import * as crypto from "node:crypto";
 import { describe, expect, it } from "vite-plus/test";
-import {
-  decryptAes128Cbc,
-  decryptAes256Gcm,
-  deriveKey,
-} from "../../src/cookies/utils/crypto";
+import { decryptAes128Cbc, decryptAes256Gcm, deriveKey } from "../../src/cookies/utils/crypto";
 
 const PBKDF2_SALT = "saltysalt";
 const PBKDF2_KEY_LENGTH_BYTES = 16;
@@ -32,13 +28,7 @@ describe("deriveKey", () => {
     const key = deriveKey("peanuts", 1);
     expect(key.length).toBe(PBKDF2_KEY_LENGTH_BYTES);
 
-    const expected = crypto.pbkdf2Sync(
-      "peanuts",
-      PBKDF2_SALT,
-      1,
-      PBKDF2_KEY_LENGTH_BYTES,
-      "sha1",
-    );
+    const expected = crypto.pbkdf2Sync("peanuts", PBKDF2_SALT, 1, PBKDF2_KEY_LENGTH_BYTES, "sha1");
     expect(key.equals(expected)).toBe(true);
   });
 

@@ -5,10 +5,10 @@
   "keywords": [
     "browser",
     "cdp",
-    "playwright",
     "chrome",
     "cookies",
-    "debug"
+    "debug",
+    "playwright"
   ],
   "homepage": "https://github.com/millionco/debug-agent",
   "bugs": {

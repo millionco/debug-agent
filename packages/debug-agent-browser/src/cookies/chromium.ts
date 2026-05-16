@@ -74,8 +74,7 @@ export const createChromiumPlatformWin32 = async (): Promise<ChromiumPlatform> =
 
   const programFiles = process.env["ProgramFiles"] ?? "C:\\Program Files";
   const programFilesX86 = process.env["ProgramFiles(x86)"] ?? "C:\\Program Files (x86)";
-  const localAppData =
-    process.env["LOCALAPPDATA"] ?? path.join(os.homedir(), "AppData", "Local");
+  const localAppData = process.env["LOCALAPPDATA"] ?? path.join(os.homedir(), "AppData", "Local");
 
   return {
     executableCandidates: (config) => {
@@ -104,10 +103,7 @@ const exists = async (filePath: string): Promise<boolean> => {
   }
 };
 
-const readJsonSafe = async <T>(
-  filePath: string,
-  schema: z.ZodType<T>,
-): Promise<T | undefined> => {
+const readJsonSafe = async <T>(filePath: string, schema: z.ZodType<T>): Promise<T | undefined> => {
   try {
     const content = await fs.readFile(filePath, "utf-8");
     return schema.parse(JSON.parse(content));
@@ -122,10 +118,7 @@ const getLastUsedProfile = async (userDataDir: string): Promise<string | undefin
 };
 
 const loadProfileLocale = async (profilePath: string): Promise<string | undefined> => {
-  const preferences = await readJsonSafe(
-    path.join(profilePath, "Preferences"),
-    preferencesSchema,
-  );
+  const preferences = await readJsonSafe(path.join(profilePath, "Preferences"), preferencesSchema);
   if (!preferences) return undefined;
   const languages = preferences.intl?.selected_languages ?? preferences.intl?.accept_languages;
   if (!languages) return undefined;

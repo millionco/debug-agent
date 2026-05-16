@@ -1,5 +1,20 @@
-import { chromium, webkit, firefox, type Browser as PlaywrightBrowser, type BrowserContext, type Locator, type Page } from "playwright";
-import { Browsers, Cookies, browserKeyOf, Cookie, createBrowsers, type Browser as BrowserProfile } from "./cookies";
+import {
+  chromium,
+  webkit,
+  firefox,
+  type Browser as PlaywrightBrowser,
+  type BrowserContext,
+  type Locator,
+  type Page,
+} from "playwright";
+import {
+  Browsers,
+  Cookies,
+  browserKeyOf,
+  Cookie,
+  createBrowsers,
+  type Browser as BrowserProfile,
+} from "./cookies";
 import {
   CONTENT_ROLES,
   HEADLESS_CHROMIUM_ARGS,
@@ -56,7 +71,11 @@ const dedupCookies = (cookies: readonly Cookie[]): Cookie[] => {
   return result;
 };
 
-const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> => {
+const withTimeout = async <T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  message: string,
+): Promise<T> => {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(message)), timeoutMs);
     promise
@@ -119,9 +138,7 @@ export class Browser {
     return dedupCookies(cookies);
   }
 
-  private async extractCookiesForBrowserKeys(
-    browserKeys: readonly string[],
-  ): Promise<Cookie[]> {
+  private async extractCookiesForBrowserKeys(browserKeys: readonly string[]): Promise<Cookie[]> {
     const browsers = await this.getBrowsers();
     let allProfiles: BrowserProfile[];
     try {
@@ -205,9 +222,7 @@ export class Browser {
         existingContexts.length > 0
           ? existingContexts[0]!
           : await playwrightBrowser.newContext(contextOptions).catch((cause) => {
-              throw new BrowserLaunchError(
-                cause instanceof Error ? cause.message : String(cause),
-              );
+              throw new BrowserLaunchError(cause instanceof Error ? cause.message : String(cause));
             });
 
       if (options.cookies && !isCdpConnected) {
@@ -232,10 +247,7 @@ export class Browser {
         try {
           await page.goto(url, { waitUntil: options.waitUntil ?? "load" });
         } catch (cause) {
-          throw new NavigationError(
-            url,
-            cause instanceof Error ? cause.message : String(cause),
-          );
+          throw new NavigationError(url, cause instanceof Error ? cause.message : String(cause));
         }
       }
 

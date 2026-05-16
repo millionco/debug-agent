@@ -43,28 +43,24 @@ describe("discoverCdpUrl", () => {
   });
 
   it("falls back to /json/list when /json/version has no debugger URL", async () => {
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse({}))
-      .mockResolvedValueOnce(
-        jsonResponse([
-          { type: "page", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/page/xyz" },
-          { type: "browser", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/browser/abc" },
-        ]),
-      );
+    fetchMock.mockResolvedValueOnce(jsonResponse({})).mockResolvedValueOnce(
+      jsonResponse([
+        { type: "page", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/page/xyz" },
+        { type: "browser", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/browser/abc" },
+      ]),
+    );
 
     const result = await discoverCdpUrl("127.0.0.1", 9222);
     expect(result).toBe("ws://127.0.0.1:9222/devtools/browser/abc");
   });
 
   it("prefers the 'browser' target in /json/list", async () => {
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse({}))
-      .mockResolvedValueOnce(
-        jsonResponse([
-          { type: "page", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/page/xyz" },
-          { type: "browser", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/browser/abc" },
-        ]),
-      );
+    fetchMock.mockResolvedValueOnce(jsonResponse({})).mockResolvedValueOnce(
+      jsonResponse([
+        { type: "page", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/page/xyz" },
+        { type: "browser", webSocketDebuggerUrl: "ws://127.0.0.1:9222/devtools/browser/abc" },
+      ]),
+    );
 
     const result = await discoverCdpUrl("127.0.0.1", 9222);
     expect(result).toContain("/devtools/browser/abc");
@@ -90,9 +86,7 @@ describe("discoverCdpUrl", () => {
   });
 
   it("throws CdpDiscoveryError when /json/list returns empty array", async () => {
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse({}))
-      .mockResolvedValueOnce(jsonResponse([]));
+    fetchMock.mockResolvedValueOnce(jsonResponse({})).mockResolvedValueOnce(jsonResponse([]));
 
     await expect(discoverCdpUrl("127.0.0.1", 9222)).rejects.toBeInstanceOf(CdpDiscoveryError);
   });

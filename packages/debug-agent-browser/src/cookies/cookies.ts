@@ -8,14 +8,11 @@ import { ExtractionError, RequiresFullDiskAccess, UnknownError } from "./errors"
 import { parseBinaryCookies } from "./utils/binary-cookies";
 import { Cookie, type Browser, type SameSitePolicy } from "./types";
 import { defaultLogger, type Logger } from "./logger";
-import {
-  MS_PER_SECOND,
-  SAME_SITE_LAX,
-  SAME_SITE_NONE,
-  SAME_SITE_STRICT,
-} from "./constants";
+import { MS_PER_SECOND, SAME_SITE_LAX, SAME_SITE_NONE, SAME_SITE_STRICT } from "./constants";
 
-const sqliteBoolSchema = z.union([z.number(), z.bigint()]).transform((value) => Number(value) !== 0);
+const sqliteBoolSchema = z
+  .union([z.number(), z.bigint()])
+  .transform((value) => Number(value) !== 0);
 
 const firefoxExpirySchema = z
   .union([z.number(), z.bigint(), z.string()])
@@ -139,6 +136,8 @@ export class Cookies {
       throw new ExtractionError(new UnknownError(cause));
     }
 
-    return parseBinaryCookies(data).filter((cookie) => Boolean(cookie.name) && Boolean(cookie.domain));
+    return parseBinaryCookies(data).filter(
+      (cookie) => Boolean(cookie.name) && Boolean(cookie.domain),
+    );
   }
 }
