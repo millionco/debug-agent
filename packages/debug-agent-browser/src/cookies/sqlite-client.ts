@@ -14,7 +14,10 @@ interface SqliteDatabase {
 
 export type SqliteEngine = "bun" | "node" | "libsql";
 
-const openDatabase = async (engine: SqliteEngine, databasePath: string): Promise<SqliteDatabase> => {
+const openDatabase = async (
+  engine: SqliteEngine,
+  databasePath: string,
+): Promise<SqliteDatabase> => {
   if (engine === "bun") {
     const { Database } = await import(BUN_SQLITE_MODULE);
     return new Database(databasePath, { readonly: true }) as SqliteDatabase;

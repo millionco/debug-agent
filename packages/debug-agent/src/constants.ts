@@ -3,3 +3,4 @@ export const LOCK_PING_TIMEOUT_MS = 1000;
 export const LOG_DIRECTORY_NAME = "debug-agent";
 export const MAX_DEDUP_ENTRIES = 10_000;
 export const VERSION_API_URL = "https://www.debug-agent.com/api/version";
+export const DEFAULT_REMOTE_URL = "https://debug-agent-remote.aidenbai.workers.dev";

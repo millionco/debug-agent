@@ -39,10 +39,7 @@ export interface DecryptFn {
 }
 
 export interface ChromiumKeyProvider {
-  buildDecryptor(
-    browserKey: ChromiumBrowserKey,
-    stripHashPrefix: boolean,
-  ): Promise<DecryptFn>;
+  buildDecryptor(browserKey: ChromiumBrowserKey, stripHashPrefix: boolean): Promise<DecryptFn>;
 }
 
 export const chromiumKeyProviderDarwin: ChromiumKeyProvider = {
@@ -97,8 +94,7 @@ export const chromiumKeyProviderLinux: ChromiumKeyProvider = {
     const candidateKeys = Array.from(candidatePasswords).map((candidateKey) =>
       deriveKey(candidateKey, PBKDF2_ITERATIONS_LINUX),
     );
-    return (encrypted: Uint8Array) =>
-      decryptAes128Cbc(encrypted, candidateKeys, stripHashPrefix);
+    return (encrypted: Uint8Array) => decryptAes128Cbc(encrypted, candidateKeys, stripHashPrefix);
   },
 };
 
@@ -242,7 +238,8 @@ export class ChromiumSqliteFallback {
 
       let cookieValue = typeof row.value === "string" ? row.value : undefined;
       if (!cookieValue || cookieValue.length === 0) {
-        const encrypted = row.encrypted_value instanceof Uint8Array ? row.encrypted_value : undefined;
+        const encrypted =
+          row.encrypted_value instanceof Uint8Array ? row.encrypted_value : undefined;
         if (!encrypted) continue;
         const decrypted = decryptValue(encrypted);
         if (decrypted === undefined) continue;

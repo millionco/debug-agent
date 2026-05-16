@@ -76,7 +76,8 @@ const findDebuggerUrl = async (port: number): Promise<string> => {
     } catch (cause) {
       lastError = cause;
     }
-    const backoff = CDP_RETRY_BASE_DELAY_MS * 2 ** Math.min(attempt, CDP_RETRY_BACKOFF_CAP_EXPONENT);
+    const backoff =
+      CDP_RETRY_BASE_DELAY_MS * 2 ** Math.min(attempt, CDP_RETRY_BACKOFF_CAP_EXPONENT);
     await sleep(backoff);
   }
   throw new ExtractionError(

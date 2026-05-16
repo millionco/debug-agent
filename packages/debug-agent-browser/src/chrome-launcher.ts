@@ -236,7 +236,10 @@ export const launchSystemChrome = async (
     const onSpawnError = (error: Error) => {
       settle(() =>
         reject(
-          new ChromeLaunchTimeoutError(CDP_LAUNCH_TIMEOUT_MS, `Chrome process error: ${error.message}`),
+          new ChromeLaunchTimeoutError(
+            CDP_LAUNCH_TIMEOUT_MS,
+            `Chrome process error: ${error.message}`,
+          ),
         ),
       );
     };

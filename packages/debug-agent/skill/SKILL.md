@@ -40,9 +40,16 @@ They guess based on code alone. You **cannot** and **must NOT** fix bugs this wa
 
 ## Logging
 
+### Choosing local vs remote mode
+
+- **Local mode** (default): Use when the buggy code runs on the same machine as this agent (localhost, local dev server, local scripts). Logs are written to a file on disk.
+- **Remote mode**: Use when the buggy code runs on a remote server, cloud environment, or production — anywhere that cannot reach `localhost`. Logs are relayed through a hosted service and read over HTTP.
+
+If the bug is in code that runs remotely or in production, use remote mode. Otherwise, use local mode.
+
 ### STEP 0: Start the logging server (MANDATORY BEFORE ANY INSTRUMENTATION)
 
-Run the debug server in **daemon mode** before any instrumentation. The `--daemon` flag starts the server in the background and exits immediately with the server info — no backgrounding or `&` required.
+**Local mode** — run the debug server in **daemon mode** before any instrumentation. The `--daemon` flag starts the server in the background and exits immediately with the server info — no backgrounding or `&` required.
 
 ```bash
 npx debug-agent --daemon
@@ -70,6 +77,27 @@ If the server fails to start, STOP IMMEDIATELY and inform the user.
 - DO NOT PROCEED with instrumentation without valid logging configuration.
 - The server is idempotent — if one is already running, it returns the existing server's info instead of starting a duplicate.
 - You do not need to pre-create the log file; it will be created automatically when your instrumentation first writes to it.
+
+**Remote mode** — run this instead:
+
+```bash
+npx debug-agent remote --daemon
+```
+
+The command prints a single JSON line to stdout and exits:
+
+```json
+{
+  "sessionId": "V1StGXR8_Z5jdHi6B-myT",
+  "endpoint": "https://debug-agent-remote.aidenbai.workers.dev/s/V1StGXR8_Z5jdHi6B-myT",
+  "streamUrl": "https://debug-agent-remote.aidenbai.workers.dev/s/V1StGXR8_Z5jdHi6B-myT/stream",
+  "expiresAt": 1733460389000
+}
+```
+
+Capture the **endpoint** value. There is no local log file in remote mode.
+
+**Important:** Remote sessions expire after 1 hour. If the session expires mid-debug, create a new one.
 
 ### STEP 1: Understand the log format
 
@@ -101,6 +129,8 @@ fetch('ENDPOINT',{method:'POST',headers:{'Content-Type':'application/json'},body
 ```
 
 - In **non-JavaScript languages** (Python, Go, Rust, Java, C, C++, Ruby), instrument by opening the **log path** in append mode using standard library file I/O, writing a single NDJSON line with your payload, and then closing the file. Keep these snippets as tiny and compact as possible (ideally one line, or just a few).
+
+- In **remote mode**, ALL languages must use HTTP POST to the **endpoint** (there is no local log file). Use `fetch`, `curl`, `requests.post`, `http.Post`, or equivalent for your language.
 
 - Decide how many instrumentation logs to insert based on the complexity of the code under investigation and the hypotheses you are testing. A single well-placed log may be enough when the issue is highly localized; complex multi-step flows may need more. Aim for the minimum number that can confirm or reject ALL your hypotheses. Guidelines:
   - At least 1 log is required; never skip instrumentation entirely
@@ -136,6 +166,13 @@ fetch('ENDPOINT',{method:'POST',headers:{'Content-Type':'application/json'},body
 - The log file will contain NDJSON entries (one JSON object per line) from your instrumentation.
 - Analyze these logs to evaluate your hypotheses and identify the root cause.
 - If log file is empty or missing: tell user the reproduction may have failed and ask them to try again.
+- In **remote mode**, fetch logs via HTTP instead of reading a file:
+
+  ```bash
+  curl -s ENDPOINT
+  ```
+
+  This returns the same NDJSON format as the local log file.
 
 ### STEP 5: Keep logs during fixes
 
@@ -177,8 +214,19 @@ This is why wrapping every debug log in `#region debug log` / `#endregion` is ma
 
 ## Server API reference
 
+### Local API (local mode)
+
 | Method                      | Effect                                      |
 | --------------------------- | ------------------------------------------- |
 | `POST /ingest/:sessionId`   | Append JSON body as NDJSON line to log file |
 | `GET /ingest/:sessionId`    | Read full log file contents                 |
 | `DELETE /ingest/:sessionId` | Clear the log file                          |
+
+### Remote API (remote mode)
+
+| Method              | Effect                                       |
+| ------------------- | -------------------------------------------- |
+| `POST /s/:id`       | Append JSON body as NDJSON log entry         |
+| `GET /s/:id`        | Read all buffered log entries as NDJSON      |
+| `GET /s/:id/stream` | SSE stream (replays buffered logs then live) |
+| `DELETE /s/:id`     | Clear all log entries (session stays alive)  |

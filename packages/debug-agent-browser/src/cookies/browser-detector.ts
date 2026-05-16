@@ -21,8 +21,7 @@ export class Browsers {
     return results
       .flat()
       .filter(
-        (browser) =>
-          browser._tag !== "ChromiumBrowser" || browser.profileName !== "System Profile",
+        (browser) => browser._tag !== "ChromiumBrowser" || browser.profileName !== "System Profile",
       );
   }
 

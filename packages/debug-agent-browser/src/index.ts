@@ -11,12 +11,7 @@ export {
 
 export { consoleLogger, silentLogger, defaultLogger, type Logger } from "./logger";
 
-export type {
-  Browser as BrowserProfile,
-  BrowserKey,
-  Cookie,
-  ExtractOptions,
-} from "./cookies";
+export type { Browser as BrowserProfile, BrowserKey, Cookie, ExtractOptions } from "./cookies";
 
 export {
   BrowserError,

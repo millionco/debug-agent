@@ -2,11 +2,7 @@ import * as fs from "node:fs/promises";
 import net from "node:net";
 import * as os from "node:os";
 import * as path from "node:path";
-import {
-  CDP_COMMON_PORTS,
-  CDP_DISCOVERY_TIMEOUT_MS,
-  CDP_PORT_PROBE_TIMEOUT_MS,
-} from "./constants";
+import { CDP_COMMON_PORTS, CDP_DISCOVERY_TIMEOUT_MS, CDP_PORT_PROBE_TIMEOUT_MS } from "./constants";
 import { CdpDiscoveryError } from "./errors";
 import { parseDevToolsActivePort } from "./utils/parse-devtools-active-port";
 import { defaultLogger, type Logger } from "./logger";

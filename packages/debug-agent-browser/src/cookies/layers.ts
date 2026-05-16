@@ -6,7 +6,12 @@ import {
   chromiumPlatformLinux,
   createChromiumPlatformWin32,
 } from "./chromium";
-import { registerFirefoxSource, firefoxPlatformDarwin, firefoxPlatformLinux, firefoxPlatformWin32 } from "./firefox";
+import {
+  registerFirefoxSource,
+  firefoxPlatformDarwin,
+  firefoxPlatformLinux,
+  firefoxPlatformWin32,
+} from "./firefox";
 import { registerSafariSource, safariPlatformDarwin } from "./safari";
 import { defaultLogger, type Logger } from "./logger";
 
