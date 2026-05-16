@@ -1,0 +1,64 @@
+packages/debug-agent/src/cli.ts
+  s_1a303a97ce1c1d::t_02729d033d7395 6
+  s_1a303a97ce1c1d::t_bcfa08febc5e76 20-21
+packages/debug-agent-remote/src/index.ts
+  s_1a303a97ce1c1d::t_77d5b45c63448e 3-14,16-22,24-113
+  s_1a303a97ce1c1d::t_8109100a5f67f4 23
+  s_1a303a97ce1c1d::t_3b1d19651f0201 1-2,15
+packages/debug-agent/src/utils/parse-sse-stream.ts
+  s_1a303a97ce1c1d::t_4d3576612777fa 1-46,48-57
+  s_1a303a97ce1c1d::t_8109100a5f67f4 47
+packages/debug-agent-remote/src/env.d.ts
+  s_1a303a97ce1c1d::t_8485b2628c0b1e 1-3
+packages/debug-agent-remote/package.json
+  s_1a303a97ce1c1d::t_8109100a5f67f4 5
+  s_1a303a97ce1c1d::t_11ed489703f8d6 1-4,6-20,24-32
+  s_1a303a97ce1c1d::t_cc48c6da081f7e 21-23
+packages/debug-agent/src/constants.ts
+  s_1a303a97ce1c1d::t_b5bbd465614862 6
+packages/debug-agent-remote/tsconfig.json
+  s_1a303a97ce1c1d::t_ce83c8510e4ccf 1-17
+packages/debug-agent/src/commands/remote.ts
+  s_1a303a97ce1c1d::t_1ecf67565f8f3b 1,3-36,41-173,177-221
+  s_1a303a97ce1c1d::t_d7d0922366df8c 2
+  s_1a303a97ce1c1d::t_8109100a5f67f4 37-40,174-176
+packages/debug-agent/skill/SKILL.md
+  s_1a303a97ce1c1d::t_8e55ec86d61cd7 169-175
+  s_1a303a97ce1c1d::t_e47f938be801c4 43-49,52,81-91,94-100
+  s_1a303a97ce1c1d::t_2f040de85bf505 133-134
+  s_1a303a97ce1c1d::t_9dec27853e98a4 92-93
+  s_1a303a97ce1c1d::t_9312963338160d 217-218,224-226
+  s_1a303a97ce1c1d::t_8109100a5f67f4 227-232
+pnpm-lock.yaml
+  ai_agent 190-205,439-488,514-519,526-531,538-543,550-555,562-567,574-579,586-591,598-603,610-615,622-627,634-639,646-651,658-663,670-675,682-687,694-699,706-711,718-723,730-735,742-747,754-759,766-771,778-783,790-795,802-807,814-819,1057-1059,1509-1517,1760-1763,1768-1770,2144-2146,2401-2403,2424-2428,2982-2986,3044-3048,3254-3256,3574-3577,3697-3703,3875-3889,3901-3912,3961-3966,4380-4408,4445-4447,4451-4453,4457-4459,4463-4465,4469-4471,4475-4477,4481-4483,4487-4489,4493-4495,4499-4501,4505-4507,4511-4513,4517-4519,4523-4525,4529-4531,4535-4537,4541-4543,4547-4549,4553-4555,4559-4561,4565-4567,4571-4573,4577-4579,4583-4585,4589-4591,4595-4597,4621,4771-4775,5054-5065,5197-5198,5201-5202,5501-5502,5707-5708,5748-5776,6272-6283,6339-6340,6565-6566,6979-6980,7064-7069,7198-7222,7237-7238,7272-7283
+.gitignore
+  s_1a303a97ce1c1d::t_bd7ca6750c0be8 6-8
+packages/debug-agent-remote/src/constants.ts
+  s_1a303a97ce1c1d::t_6e38473632878b 1-5
+.ultraplans/remote-logging/prompt.md
+  s_1a303a97ce1c1d::t_8109100a5f67f4 31,46,53,59,69-76,79,87,102,111,122,128,159,215,222,226-231,236,244,262,272,313-316,352-355,357
+packages/debug-agent-remote/wrangler.jsonc
+  s_1a303a97ce1c1d::t_900bd6f0e6f454 1-3,5-8,10-14,18-21,25
+  s_1a303a97ce1c1d::t_8109100a5f67f4 9,15-17,22-24
+  s_1a303a97ce1c1d::t_67e722194e2221 4
+packages/debug-agent-remote/src/log-session.ts
+  s_1a303a97ce1c1d::t_10bdac4289af54 16,20,24,28
+  s_1a303a97ce1c1d::t_8109100a5f67f4 44,104
+  s_1a303a97ce1c1d::t_623801e5f03e67 1-15,17-19,21-23,25-27,29-43,45-103,105-317
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "2bc948a7686c3398ea2e700c977bd303a8377dbb",
+  "prompts": {},
+  "sessions": {
+    "s_1a303a97ce1c1d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "118d647c-2eed-4d5e-a4dc-d515d660efee",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nisarg Patel <awesomenisarg@gmail.com>"
+    }
+  }
+}
