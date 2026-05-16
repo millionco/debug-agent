@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "debug-agent-remote",
+  "account_id": "5640a6fb804378931e7c364873200e9c",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-02-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "LOG_SESSION",
+        "class_name": "LogSession",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["LogSession"],
+    },
+  ],
+}

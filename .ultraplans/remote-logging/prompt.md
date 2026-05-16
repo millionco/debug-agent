@@ -28,6 +28,7 @@ Two changes:
 SQLite-backed Durable Object class. One instance per debug session.
 
 **On creation (first request):**
+
 - Record `createdAt` timestamp in storage
 - Set an alarm for 1 hour from now via `this.ctx.storage.setAlarm(Date.now() + 3_600_000)`
 - Create a SQLite table for log entries:
@@ -42,17 +43,20 @@ SQLite-backed Durable Object class. One instance per debug session.
   (`entry_id` is the optional dedup `id` field from the log payload; `data` is the full JSON string)
 
 **Storage limits (enforce on POST):**
+
 - Max 10,000 log entries per session
 - Max 10KB (10,240 bytes) per individual log entry (the JSON string)
 - Max 100MB (104,857,600 bytes) total storage per session (sum of all `data` column lengths)
 - Return `413 Payload Too Large` with a JSON error body when any limit is exceeded
 
 **Alarm handler (`alarm()`):**
+
 - Call `this.ctx.storage.deleteAll()` — this clears all SQLite data AND the alarm itself (compatibility date 2026-02-24+)
 - Close all active SSE connections with an `expired` event before closing
 - The Durable Object ceases to exist once storage is empty and it shuts down
 
 **In-memory state:**
+
 - `Set<WritableStreamDefaultWriter>` for active SSE connections (to broadcast new logs)
 - `initialized: boolean` flag to track if the SQLite table has been created
 
@@ -62,16 +66,17 @@ The Worker routes requests to the appropriate Durable Object.
 
 **Routes:**
 
-| Method | Path | Handler |
-|--------|------|---------|
-| `POST` | `/sessions` | Create a new session: generate nanoid(21), get DO stub by name, call DO to initialize, return session info |
-| `POST` | `/s/:id` | Forward to DO — ingest a log entry |
-| `GET` | `/s/:id` | Forward to DO — return all buffered logs as NDJSON |
-| `GET` | `/s/:id/stream` | Forward to DO — SSE stream |
-| `DELETE` | `/s/:id` | Forward to DO — clear logs (but keep session alive) |
-| `OPTIONS` | `*` | CORS preflight |
+| Method    | Path            | Handler                                                                                                    |
+| --------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `POST`    | `/sessions`     | Create a new session: generate nanoid(21), get DO stub by name, call DO to initialize, return session info |
+| `POST`    | `/s/:id`        | Forward to DO — ingest a log entry                                                                         |
+| `GET`     | `/s/:id`        | Forward to DO — return all buffered logs as NDJSON                                                         |
+| `GET`     | `/s/:id/stream` | Forward to DO — SSE stream                                                                                 |
+| `DELETE`  | `/s/:id`        | Forward to DO — clear logs (but keep session alive)                                                        |
+| `OPTIONS` | `*`             | CORS preflight                                                                                             |
 
 **CORS headers on ALL responses:**
+
 ```
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS
@@ -79,6 +84,7 @@ Access-Control-Allow-Headers: Content-Type
 ```
 
 **Session creation (`POST /sessions`):**
+
 - Generate a nanoid (21 chars, URL-safe alphabet, use `crypto.getRandomValues` — no npm dependency needed)
 - Derive the Durable Object ID from the nanoid using `env.LOG_SESSION.idFromName(sessionId)`
 - Call the DO to initialize it (POST with empty body or a special init action)
@@ -93,6 +99,7 @@ Access-Control-Allow-Headers: Content-Type
   ```
 
 **For all `/s/:id` routes:**
+
 - Parse the session ID from the URL
 - Get the DO stub via `env.LOG_SESSION.idFromName(sessionId)`
 - Forward the request to the DO
@@ -101,6 +108,7 @@ Access-Control-Allow-Headers: Content-Type
 ### Durable Object request handling
 
 **`POST /s/:id` (ingest):**
+
 - Parse JSON body
 - If body has an `id` field, check for duplicates: `SELECT 1 FROM logs WHERE entry_id = ? LIMIT 1`
   - If duplicate, return `{ ok: true, duplicate: true }`
@@ -111,11 +119,13 @@ Access-Control-Allow-Headers: Content-Type
 - Return `{ ok: true }`
 
 **`GET /s/:id` (read all):**
+
 - `SELECT data FROM logs ORDER BY id ASC`
 - Concatenate all `data` values with `\n` separator
 - Return with `Content-Type: application/x-ndjson`
 
 **`GET /s/:id/stream` (SSE):**
+
 - Return a streaming `Response` with:
   ```
   Content-Type: text/event-stream
@@ -146,6 +156,7 @@ Access-Control-Allow-Headers: Content-Type
 - Register the writer in the DO's in-memory SSE connection set. Remove on disconnect.
 
 **`DELETE /s/:id` (clear):**
+
 - `DELETE FROM logs`
 - Reset any in-memory dedup tracking
 - Return `{ ok: true, cleared: true }`
@@ -201,20 +212,28 @@ export const NANOID_ALPHABET = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZ
 Add a `remote` subcommand to the existing CLI in `src/cli.ts`. Follow the exact same patterns as `src/commands/serve.ts`.
 
 **Options:**
+
 - `--url <url>` — Override the Worker URL (default: hardcoded constant)
 - `--daemon` — Create session, print JSON info, exit
 - `--json` — Create session, start SSE streaming, output NDJSON lines to stdout
 - (no flags) — Interactive mode with spinner + pretty output
 
 **Daemon mode (`--daemon`):**
+
 1. POST to `{workerUrl}/sessions` to create a session
 2. Print the response JSON to stdout (single line):
    ```json
-   {"sessionId":"...","endpoint":"https://...","streamUrl":"https://...","expiresAt":1733460389000}
+   {
+     "sessionId": "...",
+     "endpoint": "https://...",
+     "streamUrl": "https://...",
+     "expiresAt": 1733460389000
+   }
    ```
 3. Exit immediately (nothing to background — the Worker is already running)
 
 **JSON mode (`--json`):**
+
 1. Create session (same as daemon)
 2. Print session info JSON line
 3. Connect to SSE stream at `streamUrl`
@@ -222,6 +241,7 @@ Add a `remote` subcommand to the existing CLI in `src/cli.ts`. Follow the exact 
 5. On `expired` event, print `{"event":"expired"}` and exit
 
 **Interactive mode:**
+
 1. Create session with spinner
 2. Display session info:
    ```
@@ -239,6 +259,7 @@ Use native `fetch()` with streaming response body (no EventSource dependency nee
 ### Constants update
 
 Add to `packages/debug-agent/src/constants.ts`:
+
 ```typescript
 export const DEFAULT_REMOTE_URL = "https://debug-agent-remote.<account>.workers.dev";
 ```
@@ -248,6 +269,7 @@ The actual workers.dev subdomain will be determined after first `wrangler deploy
 ### CLI registration
 
 In `src/cli.ts`, add:
+
 ```typescript
 import { remoteCommand } from "./commands/remote.js";
 // ...
@@ -288,10 +310,10 @@ The command prints a single JSON line to stdout and exits:
 
 \`\`\`json
 {
-  "sessionId": "V1StGXR8_Z5jdHi6B-myT",
-  "endpoint": "https://xxx.workers.dev/s/V1StGXR8_Z5jdHi6B-myT",
-  "streamUrl": "https://xxx.workers.dev/s/V1StGXR8_Z5jdHi6B-myT/stream",
-  "expiresAt": 1733460389000
+"sessionId": "V1StGXR8_Z5jdHi6B-myT",
+"endpoint": "https://xxx.workers.dev/s/V1StGXR8_Z5jdHi6B-myT",
+"streamUrl": "https://xxx.workers.dev/s/V1StGXR8_Z5jdHi6B-myT/stream",
+"expiresAt": 1733460389000
 }
 \`\`\`
 
@@ -327,12 +349,12 @@ Add the remote API:
 ```markdown
 ### Remote API (remote mode)
 
-| Method | Path | Effect |
-|--------|------|--------|
-| `POST /s/:id` | Append JSON body as NDJSON log entry |
-| `GET /s/:id` | Read all buffered log entries as NDJSON |
+| Method              | Path                                         | Effect |
+| ------------------- | -------------------------------------------- | ------ |
+| `POST /s/:id`       | Append JSON body as NDJSON log entry         |
+| `GET /s/:id`        | Read all buffered log entries as NDJSON      |
 | `GET /s/:id/stream` | SSE stream (replays buffered logs then live) |
-| `DELETE /s/:id` | Clear all log entries (session stays alive) |
+| `DELETE /s/:id`     | Clear all log entries (session stays alive)  |
 ```
 
 ---

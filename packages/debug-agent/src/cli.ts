@@ -3,6 +3,7 @@
 import { Command } from "commander";
 import { serveCommand } from "./commands/serve.js";
 import { initCommand } from "./commands/init.js";
+import { remoteCommand } from "./commands/remote.js";
 import { VERSION_API_URL } from "./constants.js";
 
 const VERSION = process.env.VERSION ?? "0.0.0";
@@ -16,6 +17,7 @@ const program = new Command()
   .description("Debugging skills for AI agents")
   .version(VERSION, "-v, --version", "display the version number")
   .addCommand(serveCommand, { isDefault: true })
-  .addCommand(initCommand);
+  .addCommand(initCommand)
+  .addCommand(remoteCommand);
 
 program.parse();
