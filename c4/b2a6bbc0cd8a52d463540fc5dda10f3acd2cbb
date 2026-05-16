@@ -1,0 +1,49 @@
+packages/debug-agent-browser/src/cookies/chromium-sqlite.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 42,97,241-242
+packages/debug-agent-browser/src/browser.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 2-17,74-78,141,225,250
+packages/debug-agent-browser/src/cookies/chromium.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 77,106,121
+packages/debug-agent-browser/src/cdp-discovery.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 5
+packages/debug-agent-browser/package.json
+  s_1a303a97ce1c1d::t_8109100a5f67f4 10-11
+packages/debug-agent-browser/src/cookies/layers.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 9-14
+packages/debug-agent-browser/tests/cdp-discovery.test.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 46-51,58-63,89
+packages/debug-agent-browser/src/cookies/sqlite-client.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 17-20
+packages/debug-agent-browser/src/index.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 14
+packages/debug-agent-browser/src/cookies/cookies.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 11,13-15,139-141
+packages/debug-agent-browser/src/cookies/index.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 54-59
+packages/debug-agent-browser/src/cookies/browser-detector.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 24
+packages/debug-agent-browser/src/chrome-launcher.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 239-242
+packages/debug-agent-browser/src/cookies/cdp-client.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 79-80
+packages/debug-agent-browser/tests/cookies/crypto.test.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 3,31
+packages/debug-agent-browser/src/cookies/utils/chromium-normalize.ts
+  s_1a303a97ce1c1d::t_8109100a5f67f4 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "c4b2a6bbc0cd8a52d463540fc5dda10f3acd2cbb",
+  "prompts": {},
+  "sessions": {
+    "s_1a303a97ce1c1d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "118d647c-2eed-4d5e-a4dc-d515d660efee",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nisarg Patel <awesomenisarg@gmail.com>"
+    }
+  }
+}
